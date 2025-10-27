@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Book Appointment - Tough Love Massage{% endblock %}
+
+{% block content %}
+<section class="py-5" style="margin-top: 80px;">
+    <div class="container" data-aos="fade-up">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="text-center mb-4">Book Your Appointment</h1>
+                <p class="text-center lead mb-5">Choose your preferred location and schedule your relaxation session</p>
+                
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <div class="text-center">
+                            <h4 class="mb-4">FullSlate Booking System</h4>
+                            <p class="text-muted mb-4">
+                                To complete the booking integration, please add your FullSlate widget code here. 
+                                The widget will allow clients to:
+                            </p>
+                            <ul class="list-unstyled mb-4">
+                                <li>✓ Select their preferred location</li>
+                                <li>✓ Choose a service provider</li>
+                                <li>✓ Pick available time slots</li>
+                                <li>✓ Complete intake forms with medical history</li>
+                                <li>✓ Receive instant confirmation</li>
+                            </ul>
+                            
+                            <div class="alert alert-info">
+                                <strong>Setup Instructions:</strong>
+                                <ol class="text-start mt-2 mb-0">
+                                    <li>Sign up for a FullSlate account at fullslate.com</li>
+                                    <li>Configure your services, locations, and providers</li>
+                                    <li>Add custom intake fields for Medical History and Pregnancy Stage</li>
+                                    <li>Copy the widget embed code</li>
+                                    <li>Replace this section with your widget code in book.html</li>
+                                </ol>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <a href="/location-downtown" class="btn btn-primary me-2">Downtown Studio</a>
+                                <a href="/location-suburban" class="btn btn-primary">Suburban Retreat</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

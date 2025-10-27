@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Gift Cards - Tough Love Massage{% endblock %}
+
+{% block content %}
+<section class="hero" style="background-image: url('https://www.creativefabrica.com/wp-content/uploads/2023/07/06/Relaxe-Beauty-Spa-Hero-Section-Figma-Graphics-73820120-1.jpg');" data-aos="fade-in">
+    <div class="hero-overlay">
+        <div class="container text-center text-white">
+            <h1 class="display-3 mb-3">Gift the Gift of Relaxation</h1>
+            <p class="lead">Surprise your loved ones with luxurious spa experiences</p>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container" data-aos="fade-up">
+        <div class="row">
+            <div class="col-lg-6 mx-auto">
+                <p class="text-center mb-4">Choose from $50, $100, or $200 gift cards. Available as digital or physical cards.</p>
+                
+                <div class="text-center mb-5">
+                    <img src="https://i.etsystatic.com/20470346/r/il/adf0df/4066600334/il_fullxfull.4066600334_pn3e.jpg" alt="Elegant Gift Card" class="img-fluid rounded shadow" style="max-width: 400px;">
+                </div>
+
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <h3 class="card-title text-center mb-4">Purchase a Gift Card</h3>
+                        <form method="POST" action="/gift-cards">
+                            <div class="mb-3">
+                                <label for="amount" class="form-label">Amount</label>
+                                <select class="form-select" id="amount" name="amount" required>
+                                    <option value="">Select Amount</option>
+                                    <option value="50">$50</option>
+                                    <option value="100">$100</option>
+                                    <option value="200">$200</option>
+                                    <option value="300">$300</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="recipient_email" class="form-label">Recipient Email</label>
+                                <input type="email" class="form-control" id="recipient_email" name="recipient_email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Personal Message (Optional)</label>
+                                <textarea class="form-control" id="message" name="message" rows="3" placeholder="Add a personal message..."></textarea>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">Purchase Gift Card</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

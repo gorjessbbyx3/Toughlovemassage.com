@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero" style="background-image: url('https://cache.marriott.com/is/image/marriotts7prod/ak-yhmak-exterior-12768:Wide-Hor?wid=1336&fit=constrain');" data-aos="fade-in">
+    <div class="hero-overlay">
+        <div class="container text-center text-white">
+            <h1 class="display-3 mb-4">Discover Ultimate Rejuvenation</h1>
+            <p class="lead mb-4">Tailored deep tissue therapies for athletes and wellness enthusiasts in luxurious settings</p>
+            <a href="/book" class="btn btn-primary btn-lg">Book Your Session</a>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5" data-aos="fade-up">Choose Your Location</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4" data-aos="zoom-in">
+                <div class="location-card clickable" data-location="/location-downtown">
+                    <img src="https://cache.marriott.com/is/image/marriotts7prod/ak-yhmak-exterior-12768:Wide-Hor?wid=1336&fit=constrain" alt="Downtown Studio Exterior" class="img-fluid rounded shadow">
+                    <h3 class="text-center mt-3">Downtown Studio</h3>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4" data-aos="zoom-in">
+                <div class="location-card clickable" data-location="/location-suburban">
+                    <img src="https://st.hzcdn.com/simgs/5a51a51705b43c14_14-0070/_.jpg" alt="Suburban Retreat Exterior" class="img-fluid rounded shadow">
+                    <h3 class="text-center mt-3">Suburban Retreat</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="testimonial-section py-5 bg-light">
+    <div class="container text-center" data-aos="fade-up">
+        <h2 class="mb-4">What Our Clients Say</h2>
+        <blockquote class="blockquote">
+            <p class="mb-3">"By far the best place to get a massage, especially if you are an athlete or need some deep tissue work."</p>
+            <footer class="blockquote-footer">Andrea L.</footer>
+        </blockquote>
+    </div>
+</section>
+{% endblock %}

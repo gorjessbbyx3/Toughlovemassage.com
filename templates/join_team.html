@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Join Our Team - Tough Love Massage{% endblock %}
+
+{% block content %}
+<section class="hero" style="background-image: url('https://saunadekorspa.b-cdn.net/wp-content/uploads/2023/10/dubai-massage-room-.jpg');" data-aos="fade-in">
+    <div class="hero-overlay">
+        <div class="container text-center text-white">
+            <h1 class="display-3 mb-3">Join Our Elite Team</h1>
+            <p class="lead">Become part of a Forbes 5-star level spa experience</p>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container" data-aos="fade-up">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="mb-4">Current Openings</h2>
+                <ul class="list-group mb-5">
+                    <li class="list-group-item">Massage Therapist - Full-time & Part-time positions available</li>
+                    <li class="list-group-item">Prenatal Massage Specialist - Certification required</li>
+                    <li class="list-group-item">Sports Recovery Therapist - Experience with athletes preferred</li>
+                </ul>
+
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <h3 class="card-title mb-4">Apply Now</h3>
+                        <form method="POST" action="/join-team" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="resume" class="form-label">Resume (PDF or DOC)</label>
+                                <input type="file" class="form-control" id="resume" name="resume" accept=".pdf,.doc,.docx">
+                            </div>
+                            <div class="mb-3">
+                                <label for="experience" class="form-label">Tell us about your experience</label>
+                                <textarea class="form-control" id="experience" name="experience" rows="5" required placeholder="Describe your relevant experience, certifications, and why you'd like to join our team..."></textarea>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">Submit Application</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

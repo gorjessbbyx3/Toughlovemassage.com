@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Downtown Studio - Tough Love Massage{% endblock %}
+
+{% block content %}
+<section class="hero" style="background-image: url('https://dropinblog.net/cdn-cgi/image/fit=scale-down,width=1140/34246798/files/featured/spa_interior.jpg');" data-aos="fade-in">
+    <div class="hero-overlay">
+        <div class="container text-center text-white">
+            <h1 class="display-3 mb-3">Welcome to Downtown Studio</h1>
+            <p class="lead">Indulge in bespoke therapies amid the vibrant city pulse</p>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container" data-aos="fade-up">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <p class="lead text-center mb-5">State-of-the-art facilities designed for athletic recovery and deep relaxation</p>
+                
+                <h3 class="mb-3">Treatment Menu</h3>
+                <ul class="list-group mb-5">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Deep Tissue Massage
+                        <span class="badge bg-primary rounded-pill">$120 / 60min</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Prenatal Massage
+                        <span class="badge bg-primary rounded-pill">$130 / 90min</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Sports Recovery
+                        <span class="badge bg-primary rounded-pill">$110 / 45min</span>
+                    </li>
+                </ul>
+
+                <h3 class="mb-4">Our Service Providers</h3>
+                <div class="row mb-5">
+                    <div class="col-md-6 mb-3">
+                        <img src="https://s3.amazonaws.com/customink-iotw-east-prod/images/15005/original/CustomInk%20Photo.JPG?1316201816" alt="Jane Doe" class="img-fluid rounded mb-2">
+                        <p class="text-center"><strong>Jane Doe</strong><br>Deep Tissue Specialist</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <img src="https://s3.amazonaws.com/customink-iotw-east-prod/images/15005/original/CustomInk%20Photo.JPG?1316201816" alt="John Smith" class="img-fluid rounded mb-2">
+                        <p class="text-center"><strong>John Smith</strong><br>Prenatal Expert</p>
+                    </div>
+                </div>
+
+                <h3 class="mb-3">Hours & Contact</h3>
+                <p>
+                    <strong>Hours:</strong> Monday-Friday 9AM-8PM, Saturday 10AM-6PM<br>
+                    <strong>Phone:</strong> (123) 456-7890<br>
+                    <strong>Address:</strong> 123 City Street, Downtown
+                </p>
+                
+                <div class="map-container mb-5">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.9476519598093!2d-73.99450968459418!3d40.74216797932881!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+
+                <h3 class="text-center mb-4">Book Your Appointment</h3>
+                <div class="text-center mb-4">
+                    <p>Schedule your session using our booking system below</p>
+                    <div class="fullslate-widget">
+                        <p class="text-muted"><em>FullSlate booking widget will be embedded here. Please configure your FullSlate account and add the widget code.</em></p>
+                        <a href="/book" class="btn btn-primary">Go to Booking Page</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

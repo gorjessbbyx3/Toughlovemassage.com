@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Provider Portal - Tough Love Massage{% endblock %}
+
+{% block content %}
+<section class="py-5" style="margin-top: 80px;">
+    <div class="container" data-aos="fade-up">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <h1 class="text-center mb-5">Provider Portal</h1>
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3>Unconfirmed Client Intakes</h3>
+                    <a href="/logout" class="btn btn-secondary">Logout</a>
+                </div>
+                
+                {% if intakes %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Client Name</th>
+                                <th>Email</th>
+                                <th>Medical History</th>
+                                <th>Pregnancy Stage</th>
+                                <th>Booking ID</th>
+                                <th>Date Submitted</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for intake in intakes %}
+                            <tr>
+                                <td>{{ intake.client_name }}</td>
+                                <td>{{ intake.email }}</td>
+                                <td>{{ intake.medical_history[:50] }}{% if intake.medical_history|length > 50 %}...{% endif %}</td>
+                                <td>{{ intake.pregnancy_stage or 'N/A' }}</td>
+                                <td>{{ intake.booking_id or 'Pending' }}</td>
+                                <td>{{ intake.created_at.strftime('%Y-%m-%d %H:%M') if intake.created_at else 'N/A' }}</td>
+                                <td>
+                                    <a href="/confirm-intake/{{ intake.id }}" class="btn btn-sm btn-success">Confirm</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info text-center">
+                    <p class="mb-0">No unconfirmed intakes at this time. All bookings are up to date!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

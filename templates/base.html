@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Luxury massage services at Tough Love Massage - Elevating wellness to Forbes 5-star standards.">
+    <meta name="keywords" content="massage, spa, deep tissue, prenatal massage, sports recovery, luxury spa">
+    <title>{% block title %}Tough Love Massage - Luxury Spa Services{% endblock %}</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">Tough Love Massage</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Locations
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/location-downtown">Downtown Studio</a></li>
+                            <li><a class="dropdown-item" href="/location-suburban">Suburban Retreat</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/book">Book Now</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gift-cards">Gift Cards</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/join-team">Join Our Team</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/policies">Policies</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/provider-portal">Portal</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-dark text-white pt-5 pb-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5>Downtown Studio</h5>
+                    <p>
+                        <strong>Hours:</strong> Mon-Fri 9AM-8PM, Sat 10AM-6PM<br>
+                        <strong>Phone:</strong> (123) 456-7890<br>
+                        <strong>Address:</strong> 123 City Street, Downtown
+                    </p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Suburban Retreat</h5>
+                    <p>
+                        <strong>Hours:</strong> Tue-Sun 10AM-7PM<br>
+                        <strong>Phone:</strong> (987) 654-3210<br>
+                        <strong>Address:</strong> 456 Green Lane, Suburbs
+                    </p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/gift-cards" class="text-white">Gift Cards</a></li>
+                        <li><a href="/join-team" class="text-white">Join Our Team</a></li>
+                        <li><a href="/policies" class="text-white">Policies</a></li>
+                    </ul>
+                    <div class="social-links mt-3">
+                        <a href="https://instagram.com" class="text-white me-3" target="_blank" rel="noopener">Instagram</a>
+                        <a href="https://facebook.com" class="text-white" target="_blank" rel="noopener">Facebook</a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <p>&copy; 2025 Tough Love Massage. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
