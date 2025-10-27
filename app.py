@@ -833,7 +833,12 @@ with app.app_context():
     db.create_all()
     
     # Initialize default locations
-    if Location.query.count() == 0:
+    try:
+        location_count = Location.query.count()
+    except Exception:
+        location_count = 0
+    
+    if location_count == 0:
         downtown = Location(
             name="Downtown Studio",
             address="123 City Street, Downtown",
@@ -852,7 +857,12 @@ with app.app_context():
         print("✓ Created default locations")
     
     # Initialize default treatments
-    if Treatment.query.count() == 0:
+    try:
+        treatment_count = Treatment.query.count()
+    except Exception:
+        treatment_count = 0
+    
+    if treatment_count == 0:
         treatments_data = [
             {"name": "Swedish Massage", "description": "Classic relaxation massage", "duration": 60, "price": 120},
             {"name": "Deep Tissue Massage", "description": "Therapeutic deep muscle work", "duration": 60, "price": 130},
@@ -873,7 +883,12 @@ with app.app_context():
     admin_email = os.environ.get('ADMIN_EMAIL')
     admin_password = os.environ.get('ADMIN_PASSWORD')
     
-    if admin_email and admin_password and Provider.query.count() == 0:
+    try:
+        provider_count = Provider.query.count()
+    except Exception:
+        provider_count = 0
+    
+    if admin_email and admin_password and provider_count == 0:
         initial_provider = Provider(
             username=admin_email,
             password_hash=generate_password_hash(admin_password),
@@ -885,7 +900,7 @@ with app.app_context():
         db.session.commit()
         print(f"✓ Created initial admin account: {admin_email}")
         print("⚠ IMPORTANT: Change your password immediately after first login!")
-    elif Provider.query.count() == 0:
+    elif provider_count == 0:
         print("\n" + "="*70)
         print("⚠ WARNING: No provider accounts exist!")
         print("To create your first provider account, set these environment variables:")
