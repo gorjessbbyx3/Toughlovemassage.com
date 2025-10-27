@@ -1,0 +1,66 @@
+This checklist ensures the redesigned website aligns with your vision: a simple, luxurious, enterprise-grade (Forbes 5-star spa feel) site with a minimal landing page featuring clickable location images, integrated FullSlate booking (with intake forms for new/prenatal clients), provider portal using Neon DB, email notifications, and pages for gift cards, join team, policies. It covers tech stack, structure, functionality, design, integrations, and testing. Use it step-by-step after implementation. Check off each item, note issues, and retest as needed.
+1. Replit Environment and Basic Setup
+•  Replit project created with Python template, named “toughlovemassage-website”.
+•  Packages installed: flask, psycopg2-binary, flask-login, werkzeug.
+•  Folders structured: “templates” for HTML, “static” with “css”, “js”, “images”.
+•  .replit file configured to run the main Python file.
+•  Site runs without errors when clicking “Run” (hosts at .repl.co URL).
+•  Custom domain connected (if in production) or migrated to Vercel/Netlify.
+2. Backend and Database Integration
+•  Main Python file handles all routes: home, locations (downtown/suburban), gift-cards (POST for payments), join-team (POST for applications), policies, book, provider-portal (login-required), confirm, login, logout.
+•  Neon DB connected: Tables created (intakes, providers, applications); sample data inserted (e.g., providers).
+•  Email function set up with no-reply SMTP for notifications (e.g., new bookings, applications, confirmations).
+•  FullSlate webhook endpoint (if implemented) syncs bookings to Neon intakes table.
+•  Authentication: Provider login checks DB hashes; portal shows only unconfirmed intakes.
+3. Global Elements (Header, Footer, Styles, Scripts)
+•  Styles: Fonts (Playfair Display headings, Montserrat body), colors (light gray body, deep teal buttons/footer), hover effects on images, animations (fade-in, zoom-in).
+•  Scripts: Location image clicks redirect, animations initialized.
+•  Base template: Includes meta SEO tags, links to Bootstrap/AOS/styles/scripts.
+•  Header: Dark navbar with logo, dropdown for locations, links to all pages, “Book Now” button.
+•  Footer: Columns for each location’s hours/phone/address, quick links (gift cards, join team, policies), social icons, copyright.
+4. Landing Page (Home)
+•  Hero: Background image (luxury spa exterior), heading “Discover Ultimate Rejuvenation”, paragraph on therapies, two clickable location images (Downtown and Suburban) with hover/zoom, “Book Your Session” button.
+•  Testimonial section: Includes original quote from Andrea L., centered.
+•  Styling: Responsive columns, white overlaid text, no extra content—directs to locations.
+5. Location Pages (Downtown Studio and Suburban Retreat)
+•  Hero: Location-specific background (e.g., interior), welcome heading/paragraph.
+•  Content: About section, treatment menu list (Deep Tissue $120/60min, Prenatal $130/90min, Sports Recovery $110/45min), providers grid (e.g., Jane Doe with image/description), hours/contact/map iframe, FullSlate embed.
+•  Styling: Fluid images, grouped lists, full-width map.
+•  Functionality: Booking widget loads; intake forms appear for new/prenatal (test via FullSlate).
+6. Gift Cards Page
+•  Hero: Spa background, heading “Gift the Gift of Relaxation”.
+•  Content: Options description, gift card image, form for amount/select, email, message, payment.
+•  Functionality: POST submits to Stripe, sends confirmation email.
+•  Styling: Full-width form, primary button.
+7. Join Our Team Page
+•  Hero: Massage room background, heading “Join Our Elite Team”.
+•  Content: Openings list (e.g., Massage Therapist), application form (name, email, resume, experience).
+•  Functionality: POST stores in Neon applications table, emails admin.
+•  Styling: List and form responsive.
+8. Policies Page
+•  Content: Heading “Our Policies”, accordion for sections (e.g., Cancellation: 24-hour notice, Privacy: GDPR/HIPAA).
+•  Styling: Collapsible accordion, readable text.
+9. Provider Portal Page
+•  Content: Login form if unauthenticated (username/password); dashboard table if logged in (columns: Client, History, Confirm link); logout.
+•  Functionality: Login authenticates via DB; table pulls unconfirmed intakes; confirm updates DB/sends email.
+•  Styling: Responsive table.
+10. Integrations and Functionality
+•  FullSlate: Services/locations/providers match site; custom fields for intake (Medical History new clients, Pregnancy Stage prenatal); emails for new bookings.
+•  Neon: Data storage secure; syncs with forms/bookings.
+•  Emails: No-reply sends for inquiries, confirmations, applications (test delivery).
+•  Payments: Stripe processes gift cards without errors.
+•  Security: Input validation, HTTPS (Replit default), HIPAA-aware for intakes.
+11. Design and User Experience
+•  Aesthetics: Soft blues/greens, elegant fonts, subtle animations—feels luxurious/5-star.
+•  Responsiveness: Mobile-friendly (test on different devices); no layout breaks.
+•  SEO: Meta titles/descriptions, alt text on all images.
+•  Accessibility: ARIA roles, semantic HTML, contrast ratios good.
+•  Performance: Images compressed/ lazy-loaded, site loads <3s.
+12. Testing and Deployment
+•  Functionality tests: All forms submit, links work, bookings/intakes process, portal logins/confirmations.
+•  Edge cases: Invalid logins, empty forms, mobile navigation, no internet (offline fallbacks if any).
+•  Browser compatibility: Works on Chrome, Firefox, Safari.
+•  Optimization: Lighthouse score >90 for performance/SEO/accessibility.
+•  Deployment: Live on Replit or host; custom domain points correctly; no downtime.
+•  Backup: Code/DB backed up (e.g., GitHub).
+Review this checklist after each major change. If items fail, reference original instructions to fix. Involve team for cross-checks to avoid bias. Update checklist if vision evolves (e.g., new features).
