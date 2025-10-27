@@ -1,0 +1,250 @@
+
+{% extends "base.html" %}
+
+{% block title %}Manage Providers - Admin{% endblock %}
+
+{% block content %}
+<section class="py-5" style="margin-top: 80px;">
+    <div class="container" data-aos="fade-up">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-users"></i> Manage Providers</h1>
+            <a href="/admin-dashboard" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link" href="/admin-dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/admin/providers">Providers</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/locations">Locations</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/treatments">Treatments</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/reports">Reports</a>
+            </li>
+        </ul>
+        
+        <!-- Add Provider Button -->
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createProviderModal">
+            <i class="fas fa-plus"></i> Add New Provider
+        </button>
+        
+        <!-- Providers Table -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead style="background: #2c7a7b; color: white;">
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Location</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for provider in providers %}
+                    <tr>
+                        <td>{{ provider.full_name or 'N/A' }}</td>
+                        <td>{{ provider.username }}</td>
+                        <td>{{ provider.email or 'N/A' }}</td>
+                        <td>{{ provider.phone or 'N/A' }}</td>
+                        <td>{{ provider.location.name if provider.location else 'Unassigned' }}</td>
+                        <td>
+                            {% if provider.is_admin %}
+                            <span class="badge bg-danger">Admin</span>
+                            {% else %}
+                            <span class="badge bg-info">Provider</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if provider.active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProvider{{ provider.id }}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#resetPassword{{ provider.id }}">
+                                <i class="fas fa-key"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#assignTreatments{{ provider.id }}">
+                                <i class="fas fa-briefcase-medical"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    
+                    <!-- Edit Provider Modal -->
+                    <div class="modal fade" id="editProvider{{ provider.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form method="POST" action="/admin/provider/{{ provider.id }}/update">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Edit Provider: {{ provider.full_name }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">Full Name</label>
+                                            <input type="text" class="form-control" name="full_name" value="{{ provider.full_name }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" class="form-control" name="email" value="{{ provider.email }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Phone</label>
+                                            <input type="text" class="form-control" name="phone" value="{{ provider.phone }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Location</label>
+                                            <select class="form-select" name="location_id">
+                                                <option value="">Unassigned</option>
+                                                {% for location in locations %}
+                                                <option value="{{ location.id }}" {% if provider.location_id == location.id %}selected{% endif %}>
+                                                    {{ location.name }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="active" {% if provider.active %}checked{% endif %}>
+                                            <label class="form-check-label">Active</label>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reset Password Modal -->
+                    <div class="modal fade" id="resetPassword{{ provider.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form method="POST" action="/admin/provider/{{ provider.id }}/reset-password">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Reset Password: {{ provider.full_name }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">New Password</label>
+                                            <input type="password" class="form-control" name="new_password" required>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-warning">Reset Password</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Assign Treatments Modal -->
+                    <div class="modal fade" id="assignTreatments{{ provider.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form method="POST" action="/admin/provider/{{ provider.id }}/treatments">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Assign Treatments: {{ provider.full_name }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {% for treatment in treatments %}
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="treatment_ids" value="{{ treatment.id }}"
+                                                   {% if treatment.id in provider.treatments|map(attribute='treatment_id')|list %}checked{% endif %}>
+                                            <label class="form-check-label">
+                                                {{ treatment.name }} ({{ treatment.duration_minutes }} min, ${{ treatment.price }})
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-success">Assign Treatments</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Create Provider Modal -->
+<div class="modal fade" id="createProviderModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="/admin/provider/create">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Provider</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" name="full_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Username (Login) *</label>
+                        <input type="text" class="form-control" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password *</label>
+                        <input type="password" class="form-control" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-control" name="phone">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <select class="form-select" name="location_id">
+                            <option value="">Unassigned</option>
+                            {% for location in locations %}
+                            <option value="{{ location.id }}">{{ location.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="is_admin">
+                        <label class="form-check-label">Admin Privileges</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Provider</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}

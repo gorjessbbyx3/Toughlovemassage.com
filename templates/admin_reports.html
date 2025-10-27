@@ -1,0 +1,83 @@
+
+{% extends "base.html" %}
+
+{% block title %}Reports - Admin{% endblock %}
+
+{% block content %}
+<section class="py-5" style="margin-top: 80px;">
+    <div class="container" data-aos="fade-up">
+        <h1 class="mb-4"><i class="fas fa-chart-bar"></i> Reports & Analytics</h1>
+        
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link" href="/admin-dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/providers">Providers</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/locations">Locations</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/treatments">Treatments</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/admin/reports">Reports</a>
+            </li>
+        </ul>
+        
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header" style="background: #2c7a7b; color: white;">
+                        <h5 class="mb-0">Bookings by Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Confirmed:</strong> {{ confirmed_count }}</p>
+                        <p><strong>Pending:</strong> {{ pending_count }}</p>
+                        <p><strong>Total:</strong> {{ confirmed_count + pending_count }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header" style="background: #2c7a7b; color: white;">
+                        <h5 class="mb-0">Recent Activity (30 Days)</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>New Bookings:</strong> {{ recent_bookings }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header" style="background: #2c7a7b; color: white;">
+                <h5 class="mb-0">Bookings by Provider</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Provider</th>
+                            <th>Total Bookings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for provider_name, count in bookings_by_provider %}
+                        <tr>
+                            <td>{{ provider_name or 'Unassigned' }}</td>
+                            <td>{{ count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}

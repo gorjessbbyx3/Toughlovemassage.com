@@ -3,7 +3,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from models import db, Intake, Provider, Application
+from models import db, Intake, Provider, Application, Location, Treatment, ProviderTreatment, ProviderAvailability, ProviderDailyLimit, ClientNote
+from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -253,29 +254,394 @@ def gift_cards():
                 checkout_session = stripe.checkout.Session.create(
 
 
-@app.route('/test-intake', methods=['GET', 'POST'])
+@app.route('/admin-dashboard')
 @login_required
-def test_intake():
-    """Create a test intake for demonstration purposes"""
-    if request.method == 'POST':
-        test_intake = Intake(
-            client_name=request.form.get('client_name', 'Test Client'),
-            email=request.form.get('email', 'test@example.com'),
-            medical_history=request.form.get('medical_history', 'No known medical conditions'),
-            pregnancy_stage=request.form.get('pregnancy_stage'),
-            booking_id=f'TEST-{datetime.now().strftime("%Y%m%d%H%M%S")}',
-            confirmed=False
-        )
-        db.session.add(test_intake)
-        db.session.commit()
-        
-        send_booking_notification(test_intake)
-        
-        flash(f'✓ Test intake created for {test_intake.client_name}', 'success')
+def admin_dashboard():
+    """Admin dashboard with reports and management"""
+    provider = Provider.query.get(current_user.id)
+    if not provider or not provider.is_admin:
+        flash('Access denied. Admin privileges required.', 'error')
         return redirect(url_for('provider_portal'))
     
-    return render_template('test_intake.html')
+    # Get statistics
+    total_providers = Provider.query.filter_by(active=True).count()
+    total_intakes = Intake.query.count()
+    pending_intakes = Intake.query.filter_by(confirmed=False).count()
+    total_applications = Application.query.count()
+    
+    # Recent activity
+    recent_intakes = Intake.query.order_by(Intake.created_at.desc()).limit(10).all()
+    recent_applications = Application.query.order_by(Application.submitted_at.desc()).limit(5).all()
+    
+    return render_template('admin_dashboard.html',
+                         total_providers=total_providers,
+                         total_intakes=total_intakes,
+                         pending_intakes=pending_intakes,
+                         total_applications=total_applications,
+                         recent_intakes=recent_intakes,
+                         recent_applications=recent_applications)
 
+@app.route('/admin/providers')
+@login_required
+def admin_providers():
+    """Manage providers"""
+    provider = Provider.query.get(current_user.id)
+    if not provider or not provider.is_admin:
+        flash('Access denied. Admin privileges required.', 'error')
+        return redirect(url_for('provider_portal'))
+    
+    providers = Provider.query.all()
+    locations = Location.query.all()
+    treatments = Treatment.query.filter_by(active=True).all()
+    
+    return render_template('admin_providers.html', providers=providers, locations=locations, treatments=treatments)
+
+@app.route('/admin/provider/create', methods=['POST'])
+@login_required
+def admin_create_provider():
+    """Create new provider"""
+    provider = Provider.query.get(current_user.id)
+    if not provider or not provider.is_admin:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    username = request.form.get('username')
+    password = request.form.get('password')
+    full_name = request.form.get('full_name')
+    email = request.form.get('email')
+    phone = request.form.get('phone')
+    location_id = request.form.get('location_id')
+    is_admin = request.form.get('is_admin') == 'on'
+    
+    if Provider.query.filter_by(username=username).first():
+        flash('Username already exists', 'error')
+        return redirect(url_for('admin_providers'))
+    
+    new_provider = Provider(
+        username=username,
+        password_hash=generate_password_hash(password),
+        full_name=full_name,
+        email=email,
+        phone=phone,
+        location_id=location_id if location_id else None,
+        is_admin=is_admin
+    )
+    db.session.add(new_provider)
+    db.session.commit()
+    
+    flash(f'✓ Provider {full_name} created successfully', 'success')
+    return redirect(url_for('admin_providers'))
+
+@app.route('/admin/provider/<int:provider_id>/update', methods=['POST'])
+@login_required
+def admin_update_provider(provider_id):
+    """Update provider details"""
+    admin = Provider.query.get(current_user.id)
+    if not admin or not admin.is_admin:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    provider = Provider.query.get_or_404(provider_id)
+    
+    provider.full_name = request.form.get('full_name')
+    provider.email = request.form.get('email')
+    provider.phone = request.form.get('phone')
+    provider.location_id = request.form.get('location_id') or None
+    provider.active = request.form.get('active') == 'on'
+    
+    db.session.commit()
+    
+    flash(f'✓ Provider {provider.full_name} updated successfully', 'success')
+    return redirect(url_for('admin_providers'))
+
+@app.route('/admin/provider/<int:provider_id>/reset-password', methods=['POST'])
+@login_required
+def admin_reset_password(provider_id):
+    """Reset provider password"""
+    admin = Provider.query.get(current_user.id)
+    if not admin or not admin.is_admin:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    provider = Provider.query.get_or_404(provider_id)
+    new_password = request.form.get('new_password')
+    
+    provider.password_hash = generate_password_hash(new_password)
+    db.session.commit()
+    
+    flash(f'✓ Password reset for {provider.full_name}', 'success')
+    return redirect(url_for('admin_providers'))
+
+@app.route('/admin/provider/<int:provider_id>/treatments', methods=['POST'])
+@login_required
+def admin_assign_treatments(provider_id):
+    """Assign treatments to provider"""
+    admin = Provider.query.get(current_user.id)
+    if not admin or not admin.is_admin:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    provider = Provider.query.get_or_404(provider_id)
+    treatment_ids = request.form.getlist('treatment_ids')
+    
+    # Remove existing assignments
+    ProviderTreatment.query.filter_by(provider_id=provider_id).delete()
+    
+    # Add new assignments
+    for treatment_id in treatment_ids:
+        pt = ProviderTreatment(provider_id=provider_id, treatment_id=int(treatment_id))
+        db.session.add(pt)
+    
+    db.session.commit()
+    
+    flash(f'✓ Treatments updated for {provider.full_name}', 'success')
+    return redirect(url_for('admin_providers'))
+
+@app.route('/admin/locations')
+@login_required
+def admin_locations():
+    """Manage locations"""
+    provider = Provider.query.get(current_user.id)
+    if not provider or not provider.is_admin:
+        flash('Access denied. Admin privileges required.', 'error')
+        return redirect(url_for('provider_portal'))
+    
+    locations = Location.query.all()
+    return render_template('admin_locations.html', locations=locations)
+
+@app.route('/admin/location/create', methods=['POST'])
+@login_required
+def admin_create_location():
+    """Create new location"""
+    provider = Provider.query.get(current_user.id)
+    if not provider or not provider.is_admin:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    location = Location(
+        name=request.form.get('name'),
+        address=request.form.get('address'),
+        phone=request.form.get('phone'),
+        hours=request.form.get('hours')
+    )
+    db.session.add(location)
+    db.session.commit()
+    
+    flash(f'✓ Location {location.name} created', 'success')
+    return redirect(url_for('admin_locations'))
+
+@app.route('/admin/treatments')
+@login_required
+def admin_treatments():
+    """Manage treatments"""
+    provider = Provider.query.get(current_user.id)
+    if not provider or not provider.is_admin:
+        flash('Access denied. Admin privileges required.', 'error')
+        return redirect(url_for('provider_portal'))
+    
+    treatments = Treatment.query.all()
+    return render_template('admin_treatments.html', treatments=treatments)
+
+@app.route('/admin/treatment/create', methods=['POST'])
+@login_required
+def admin_create_treatment():
+    """Create new treatment"""
+    provider = Provider.query.get(current_user.id)
+    if not provider or not provider.is_admin:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    treatment = Treatment(
+        name=request.form.get('name'),
+        description=request.form.get('description'),
+        duration_minutes=int(request.form.get('duration_minutes', 60)),
+        price=float(request.form.get('price', 0))
+    )
+    db.session.add(treatment)
+    db.session.commit()
+    
+    flash(f'✓ Treatment {treatment.name} created', 'success')
+    return redirect(url_for('admin_treatments'))
+
+@app.route('/admin/reports')
+@login_required
+def admin_reports():
+    """View detailed reports"""
+    provider = Provider.query.get(current_user.id)
+    if not provider or not provider.is_admin:
+        flash('Access denied. Admin privileges required.', 'error')
+        return redirect(url_for('provider_portal'))
+    
+    from sqlalchemy import func
+    from datetime import timedelta
+    
+    # Bookings by provider
+    bookings_by_provider = db.session.query(
+        Provider.full_name,
+        func.count(Intake.id).label('count')
+    ).join(Intake, Provider.id == Intake.assigned_provider_id, isouter=True)\
+     .group_by(Provider.full_name).all()
+    
+    # Bookings by status
+    confirmed_count = Intake.query.filter_by(confirmed=True).count()
+    pending_count = Intake.query.filter_by(confirmed=False).count()
+    
+    # Recent 30 days activity
+    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+    recent_bookings = Intake.query.filter(Intake.created_at >= thirty_days_ago).count()
+    
+    return render_template('admin_reports.html',
+                         bookings_by_provider=bookings_by_provider,
+                         confirmed_count=confirmed_count,
+                         pending_count=pending_count,
+                         recent_bookings=recent_bookings)
+
+@app.route('/provider/availability')
+@login_required
+def provider_availability():
+    """Manage provider availability"""
+    provider = Provider.query.get(current_user.id)
+    availabilities = ProviderAvailability.query.filter_by(provider_id=current_user.id).all()
+    
+    return render_template('provider_availability.html', provider=provider, availabilities=availabilities)
+
+@app.route('/provider/availability/add', methods=['POST'])
+@login_required
+def provider_add_availability():
+    """Add availability slot"""
+    from datetime import datetime
+    
+    day_of_week = int(request.form.get('day_of_week'))
+    start_time = datetime.strptime(request.form.get('start_time'), '%H:%M').time()
+    end_time = datetime.strptime(request.form.get('end_time'), '%H:%M').time()
+    
+    availability = ProviderAvailability(
+        provider_id=current_user.id,
+        day_of_week=day_of_week,
+        start_time=start_time,
+        end_time=end_time
+    )
+    db.session.add(availability)
+    db.session.commit()
+    
+    flash('✓ Availability added', 'success')
+    return redirect(url_for('provider_availability'))
+
+@app.route('/provider/availability/<int:availability_id>/delete', methods=['POST'])
+@login_required
+def provider_delete_availability(availability_id):
+    """Delete availability slot"""
+    availability = ProviderAvailability.query.get_or_404(availability_id)
+    
+    if availability.provider_id != current_user.id:
+        flash('Access denied', 'error')
+        return redirect(url_for('provider_availability'))
+    
+    db.session.delete(availability)
+    db.session.commit()
+    
+    flash('✓ Availability deleted', 'success')
+    return redirect(url_for('provider_availability'))
+
+@app.route('/provider/preferences', methods=['GET', 'POST'])
+@login_required
+def provider_preferences():
+    """Manage booking preferences"""
+    provider = Provider.query.get(current_user.id)
+    treatments = Treatment.query.filter_by(active=True).all()
+    daily_limits = ProviderDailyLimit.query.filter_by(provider_id=current_user.id).all()
+    
+    if request.method == 'POST':
+        # Update buffer time
+        provider.buffer_time_minutes = int(request.form.get('buffer_time_minutes', 15))
+        db.session.commit()
+        
+        flash('✓ Preferences updated', 'success')
+        return redirect(url_for('provider_preferences'))
+    
+    return render_template('provider_preferences.html', 
+                         provider=provider, 
+                         treatments=treatments,
+                         daily_limits=daily_limits)
+
+@app.route('/provider/daily-limit/set', methods=['POST'])
+@login_required
+def provider_set_daily_limit():
+    """Set daily limit for a treatment"""
+    treatment_id = int(request.form.get('treatment_id'))
+    max_per_day = int(request.form.get('max_per_day'))
+    
+    # Check if limit already exists
+    existing = ProviderDailyLimit.query.filter_by(
+        provider_id=current_user.id,
+        treatment_id=treatment_id
+    ).first()
+    
+    if existing:
+        existing.max_per_day = max_per_day
+    else:
+        limit = ProviderDailyLimit(
+            provider_id=current_user.id,
+            treatment_id=treatment_id,
+            max_per_day=max_per_day
+        )
+        db.session.add(limit)
+    
+    db.session.commit()
+    
+    flash('✓ Daily limit updated', 'success')
+    return redirect(url_for('provider_preferences'))
+
+@app.route('/provider/client-notes/<string:client_email>')
+@login_required
+def provider_view_client_notes(client_email):
+    """View/edit client notes"""
+    note = ClientNote.query.filter_by(
+        provider_id=current_user.id,
+        client_email=client_email
+    ).first()
+    
+    client_intakes = Intake.query.filter_by(email=client_email).all()
+    
+    return render_template('provider_client_notes.html', 
+                         client_email=client_email,
+                         note=note,
+                         client_intakes=client_intakes)
+
+@app.route('/provider/client-notes/save', methods=['POST'])
+@login_required
+def provider_save_client_notes():
+    """Save client notes"""
+    client_email = request.form.get('client_email')
+    notes = request.form.get('notes')
+    
+    existing = ClientNote.query.filter_by(
+        provider_id=current_user.id,
+        client_email=client_email
+    ).first()
+    
+    if existing:
+        existing.notes = notes
+        existing.updated_at = datetime.utcnow()
+    else:
+        note = ClientNote(
+            provider_id=current_user.id,
+            client_email=client_email,
+            notes=notes
+        )
+        db.session.add(note)
+    
+    db.session.commit()
+    
+    flash('✓ Client notes saved', 'success')
+    return redirect(url_for('provider_view_client_notes', client_email=client_email))
+
+@app.route('/provider/intake/<int:intake_id>/add-note', methods=['POST'])
+@login_required
+def provider_add_intake_note(intake_id):
+    """Add note to specific appointment"""
+    intake = Intake.query.get_or_404(intake_id)
+    note = request.form.get('note')
+    
+    intake.provider_notes = note
+    db.session.commit()
+    
+    flash('✓ Appointment note added', 'success')
+    return redirect(url_for('provider_portal'))
 
                     line_items=[{
                         'price_data': {
@@ -385,8 +751,9 @@ def book():
 @app.route('/provider-portal')
 @login_required
 def provider_portal():
+    provider = Provider.query.get(current_user.id)
     unconfirmed_intakes = Intake.query.filter_by(confirmed=False).all()
-    return render_template('provider_portal.html', intakes=unconfirmed_intakes)
+    return render_template('provider_portal.html', intakes=unconfirmed_intakes, provider=provider)
 
 @app.route('/confirm-intake/<int:intake_id>')
 @login_required
@@ -467,17 +834,58 @@ def fullslate_webhook():
 with app.app_context():
     db.create_all()
     
+    # Initialize default locations
+    if Location.query.count() == 0:
+        downtown = Location(
+            name="Downtown Studio",
+            address="123 City Street, Downtown",
+            phone="(123) 456-7890",
+            hours="Mon-Fri 9AM-8PM, Sat 10AM-6PM"
+        )
+        suburban = Location(
+            name="Suburban Retreat",
+            address="456 Peaceful Lane, Suburbs",
+            phone="(123) 456-7891",
+            hours="Mon-Sat 10AM-7PM, Sun 12PM-5PM"
+        )
+        db.session.add(downtown)
+        db.session.add(suburban)
+        db.session.commit()
+        print("✓ Created default locations")
+    
+    # Initialize default treatments
+    if Treatment.query.count() == 0:
+        treatments_data = [
+            {"name": "Swedish Massage", "description": "Classic relaxation massage", "duration": 60, "price": 120},
+            {"name": "Deep Tissue Massage", "description": "Therapeutic deep muscle work", "duration": 60, "price": 130},
+            {"name": "Hot Stone Massage", "description": "Heated stones for deep relaxation", "duration": 90, "price": 150},
+            {"name": "Prenatal Massage", "description": "Specialized care for expecting mothers", "duration": 60, "price": 125},
+        ]
+        for t_data in treatments_data:
+            treatment = Treatment(
+                name=t_data["name"],
+                description=t_data["description"],
+                duration_minutes=t_data["duration"],
+                price=t_data["price"]
+            )
+            db.session.add(treatment)
+        db.session.commit()
+        print("✓ Created default treatments")
+    
     admin_email = os.environ.get('ADMIN_EMAIL')
     admin_password = os.environ.get('ADMIN_PASSWORD')
     
     if admin_email and admin_password and Provider.query.count() == 0:
         initial_provider = Provider(
             username=admin_email,
-            password_hash=generate_password_hash(admin_password)
+            password_hash=generate_password_hash(admin_password),
+            full_name="Administrator",
+            email=admin_email,
+            is_admin=True
         )
         db.session.add(initial_provider)
         db.session.commit()
-        print(f"✓ Created initial provider account: {admin_email}")
+        print(f"✓ Created initial admin account: {admin_email}")
         print("⚠ IMPORTANT: Change your password immediately after first login!")
     elif Provider.query.count() == 0:
         print("\n" + "="*70)

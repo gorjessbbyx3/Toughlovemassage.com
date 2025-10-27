@@ -1,0 +1,92 @@
+
+{% extends "base.html" %}
+
+{% block title %}Manage Locations - Admin{% endblock %}
+
+{% block content %}
+<section class="py-5" style="margin-top: 80px;">
+    <div class="container" data-aos="fade-up">
+        <h1 class="mb-4"><i class="fas fa-map-marker-alt"></i> Manage Locations</h1>
+        
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link" href="/admin-dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/providers">Providers</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/admin/locations">Locations</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/treatments">Treatments</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/reports">Reports</a>
+            </li>
+        </ul>
+        
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createLocationModal">
+            <i class="fas fa-plus"></i> Add New Location
+        </button>
+        
+        <div class="row">
+            {% for location in locations %}
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ location.name }}</h5>
+                        <p class="card-text">
+                            <strong>Address:</strong> {{ location.address or 'N/A' }}<br>
+                            <strong>Phone:</strong> {{ location.phone or 'N/A' }}<br>
+                            <strong>Hours:</strong> {{ location.hours or 'N/A' }}
+                        </p>
+                        <span class="badge {% if location.active %}bg-success{% else %}bg-secondary{% endif %}">
+                            {% if location.active %}Active{% else %}Inactive{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Create Location Modal -->
+<div class="modal fade" id="createLocationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="/admin/location/create">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Location</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Name *</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <input type="text" class="form-control" name="address">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-control" name="phone">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Hours</label>
+                        <textarea class="form-control" name="hours" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Location</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}

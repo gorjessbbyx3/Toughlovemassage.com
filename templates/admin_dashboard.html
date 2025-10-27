@@ -1,0 +1,128 @@
+
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Tough Love Massage{% endblock %}
+
+{% block content %}
+<section class="py-5" style="margin-top: 80px;">
+    <div class="container" data-aos="fade-up">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-shield-alt"></i> Admin Dashboard</h1>
+            <div>
+                <a href="/provider-portal" class="btn btn-secondary me-2">
+                    <i class="fas fa-user"></i> Provider Portal
+                </a>
+                <a href="/logout" class="btn btn-secondary">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" href="/admin-dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/providers">Providers</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/locations">Locations</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/treatments">Treatments</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/reports">Reports</a>
+            </li>
+        </ul>
+        
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card text-white" style="background: linear-gradient(135deg, #2c7a7b 0%, #1a4d4d 100%);">
+                    <div class="card-body">
+                        <h5 class="card-title">Active Providers</h5>
+                        <h2 class="mb-0">{{ total_providers }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-white" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);">
+                    <div class="card-body">
+                        <h5 class="card-title">Pending Bookings</h5>
+                        <h2 class="mb-0">{{ pending_intakes }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-white" style="background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Bookings</h5>
+                        <h2 class="mb-0">{{ total_intakes }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-white" style="background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);">
+                    <div class="card-body">
+                        <h5 class="card-title">Applications</h5>
+                        <h2 class="mb-0">{{ total_applications }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="row">
+            <div class="col-lg-8">
+                <h3 class="mb-3">Recent Bookings</h3>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="background: #2c7a7b; color: white;">
+                            <tr>
+                                <th>Client</th>
+                                <th>Email</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for intake in recent_intakes %}
+                            <tr>
+                                <td>{{ intake.client_name }}</td>
+                                <td>{{ intake.email }}</td>
+                                <td>{{ intake.created_at.strftime('%m/%d/%Y %I:%M %p') if intake.created_at else 'N/A' }}</td>
+                                <td>
+                                    {% if intake.confirmed %}
+                                    <span class="badge bg-success">Confirmed</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <h3 class="mb-3">Recent Applications</h3>
+                <div class="list-group">
+                    {% for app in recent_applications %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ app.name }}</h6>
+                            <small>{{ app.submitted_at.strftime('%m/%d') if app.submitted_at else '' }}</small>
+                        </div>
+                        <small class="text-muted">{{ app.email }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
