@@ -1,16 +1,20 @@
 document.addEventListener('DOMContentLoaded', function() {
     AOS.init({
-        duration: 1000,
+        duration: 1200,
         once: true,
-        offset: 100
+        offset: 100,
+        easing: 'ease-out-cubic'
     });
 
-    const locationCards = document.querySelectorAll('.location-card.clickable');
+    const locationCards = document.querySelectorAll('.location-card.clickable, .luxury-location-card');
     locationCards.forEach(card => {
-        card.addEventListener('click', function() {
+        card.addEventListener('click', function(e) {
             const location = this.getAttribute('data-location');
+            const link = this.querySelector('a');
             if (location) {
                 window.location.href = location;
+            } else if (link) {
+                window.location.href = link.getAttribute('href');
             }
         });
     });
@@ -34,9 +38,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 window.addEventListener('scroll', function() {
     const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 50) {
-        navbar.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
-    } else {
-        navbar.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+    if (navbar) {
+        if (window.scrollY > 50) {
+            navbar.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+        } else {
+            navbar.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+        }
     }
 });
