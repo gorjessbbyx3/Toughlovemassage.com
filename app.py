@@ -42,6 +42,7 @@ def load_user(user_id):
     return None
 
 def send_email(to_email, subject, body):
+    """Send HTML email with professional formatting and error handling"""
     try:
         smtp_server = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
         smtp_port = int(os.environ.get('SMTP_PORT', '587'))
@@ -49,24 +50,181 @@ def send_email(to_email, subject, body):
         smtp_password = os.environ.get('SMTP_PASSWORD', '')
         
         if not smtp_password:
-            print(f"Email would be sent to {to_email}: {subject}")
+            print(f"📧 [DEV MODE] Email would be sent to {to_email}")
+            print(f"   Subject: {subject}")
+            print(f"   Body preview: {body[:100]}...")
             return True
         
-        msg = MIMEMultipart()
-        msg['From'] = smtp_username
+        msg = MIMEMultipart('alternative')
+        msg['From'] = f"Tough Love Massage <{smtp_username}>"
         msg['To'] = to_email
         msg['Subject'] = subject
-        msg.attach(MIMEText(body, 'html'))
         
-        server = smtplib.SMTP(smtp_server, smtp_port)
-        server.starttls()
-        server.login(smtp_username, smtp_password)
-        server.send_message(msg)
-        server.quit()
+        # Create professional HTML wrapper
+        html_template = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: 'Montserrat', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #2c7a7b 0%, #1a4d4d 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                <h1 style="margin: 0; font-family: 'Playfair Display', serif; font-size: 28px;">Tough Love Massage</h1>
+                <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.9;">Discover Ultimate Rejuvenation</p>
+            </div>
+            <div style="background: #ffffff; padding: 30px; border: 1px solid #e0f2f1; border-top: none; border-radius: 0 0 10px 10px;">
+                {body}
+            </div>
+            <div style="text-align: center; margin-top: 20px; padding: 20px; color: #666; font-size: 12px;">
+                <p>Tough Love Massage | Downtown Studio & Suburban Retreat</p>
+                <p style="margin: 5px 0;">
+                    <a href="mailto:info@toughlovemassage.com" style="color: #2c7a7b; text-decoration: none;">Contact Us</a> | 
+                    <a href="https://toughlovemassage.com/policies" style="color: #2c7a7b; text-decoration: none;">Privacy Policy</a>
+                </p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html_template, 'html'))
+        
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_username, smtp_password)
+            server.send_message(msg)
+        
+        print(f"✓ Email sent successfully to {to_email}")
         return True
     except Exception as e:
-        print(f"Email error: {e}")
+        print(f"✗ Email error: {e}")
         return False
+
+def send_booking_notification(intake):
+    """Notify providers of new booking"""
+    provider_emails = [p.username for p in Provider.query.all()]
+    subject = f"New Booking: {intake.client_name}"
+    body = f"""
+    <h2 style="color: #2c7a7b;">New Client Booking Received</h2>
+    <p>A new client has submitted their intake form and needs confirmation.</p>
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <tr style="background: #e0f2f1;">
+            <td style="padding: 10px; font-weight: bold; border: 1px solid #2c7a7b;">Client Name</td>
+            <td style="padding: 10px; border: 1px solid #2c7a7b;">{intake.client_name}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; font-weight: bold; border: 1px solid #2c7a7b;">Email</td>
+            <td style="padding: 10px; border: 1px solid #2c7a7b;">{intake.email}</td>
+        </tr>
+        <tr style="background: #e0f2f1;">
+            <td style="padding: 10px; font-weight: bold; border: 1px solid #2c7a7b;">Booking ID</td>
+            <td style="padding: 10px; border: 1px solid #2c7a7b;">{intake.booking_id or 'Pending'}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; font-weight: bold; border: 1px solid #2c7a7b;">Pregnancy</td>
+            <td style="padding: 10px; border: 1px solid #2c7a7b;">{intake.pregnancy_stage or 'N/A'}</td>
+        </tr>
+    </table>
+    <p><strong>Medical History:</strong></p>
+    <div style="background: #f5f5f5; padding: 15px; border-left: 4px solid #2c7a7b; margin: 10px 0;">
+        {intake.medical_history or 'No medical history provided'}
+    </div>
+    <div style="margin-top: 30px; text-align: center;">
+        <a href="https://{os.environ.get('REPLIT_DEV_DOMAIN', 'localhost:5000')}/provider-portal" 
+           style="background: #2c7a7b; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+            Review in Provider Portal
+        </a>
+    </div>
+    """
+    for email in provider_emails:
+        send_email(email, subject, body)
+
+def send_confirmation_email(intake):
+    """Send confirmation to client"""
+    subject = "Your Massage Appointment is Confirmed!"
+    body = f"""
+    <h2 style="color: #2c7a7b;">Booking Confirmed</h2>
+    <p>Dear {intake.client_name},</p>
+    <p>Great news! Your massage appointment has been confirmed by our team.</p>
+    <div style="background: #e0f2f1; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 5px 0;"><strong>Booking ID:</strong> {intake.booking_id or 'TBD'}</p>
+        <p style="margin: 5px 0;"><strong>Status:</strong> <span style="color: #2c7a7b; font-weight: bold;">✓ Confirmed</span></p>
+    </div>
+    <h3 style="color: #2c7a7b;">What to Expect</h3>
+    <ul>
+        <li>Arrive 10 minutes early to complete any remaining paperwork</li>
+        <li>Wear comfortable, loose-fitting clothing</li>
+        <li>Communicate any areas of concern with your therapist</li>
+        <li>Relax and enjoy your rejuvenating experience</li>
+    </ul>
+    <h3 style="color: #2c7a7b;">Cancellation Policy</h3>
+    <p>Please provide 24-hour notice if you need to reschedule or cancel. See our <a href="https://{os.environ.get('REPLIT_DEV_DOMAIN', 'localhost:5000')}/policies" style="color: #2c7a7b;">cancellation policy</a> for details.</p>
+    <p style="margin-top: 30px;">We look forward to seeing you soon!</p>
+    <p><em>The Tough Love Massage Team</em></p>
+    """
+    send_email(intake.email, subject, body)
+
+def send_gift_card_email(recipient_email, amount, message, sender_name="A Friend"):
+    """Send gift card to recipient"""
+    subject = "You've Received a Tough Love Massage Gift Card!"
+    body = f"""
+    <h2 style="color: #2c7a7b;">Congratulations! 🎁</h2>
+    <p>You've received a special gift from {sender_name}!</p>
+    <div style="background: linear-gradient(135deg, #2c7a7b 0%, #1a4d4d 100%); color: white; padding: 40px; text-align: center; border-radius: 10px; margin: 30px 0;">
+        <h1 style="margin: 0; font-size: 48px; font-family: 'Playfair Display', serif;">Gift Card</h1>
+        <p style="font-size: 36px; font-weight: bold; margin: 20px 0;">${amount}</p>
+        <p style="font-size: 14px; opacity: 0.9;">Tough Love Massage</p>
+    </div>
+    {f'<div style="background: #f5f5f5; padding: 20px; border-left: 4px solid #2c7a7b; margin: 20px 0;"><p style="margin: 0;"><strong>Personal Message:</strong></p><p style="margin: 10px 0 0 0; font-style: italic;">"{message}"</p></div>' if message else ''}
+    <h3 style="color: #2c7a7b;">How to Redeem</h3>
+    <ol>
+        <li>Visit our booking page or call us directly</li>
+        <li>Mention you have a gift card</li>
+        <li>Schedule your luxurious massage experience</li>
+    </ol>
+    <div style="margin-top: 30px; text-align: center;">
+        <a href="https://{os.environ.get('REPLIT_DEV_DOMAIN', 'localhost:5000')}/book" 
+           style="background: #2c7a7b; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+            Book Your Appointment
+        </a>
+    </div>
+    <p style="margin-top: 30px; font-size: 12px; color: #666;">Gift cards are valid for one year from the date of purchase and can be used at any of our locations.</p>
+    """
+    send_email(recipient_email, subject, body)
+
+def send_application_notification(application):
+    """Notify admin of new job application"""
+    admin_email = os.environ.get('ADMIN_EMAIL', 'admin@toughlovemassage.com')
+    subject = f"New Job Application: {application.name}"
+    body = f"""
+    <h2 style="color: #2c7a7b;">New Team Application Received</h2>
+    <p>A new candidate has applied to join the Tough Love Massage team!</p>
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <tr style="background: #e0f2f1;">
+            <td style="padding: 10px; font-weight: bold; border: 1px solid #2c7a7b;">Name</td>
+            <td style="padding: 10px; border: 1px solid #2c7a7b;">{application.name}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; font-weight: bold; border: 1px solid #2c7a7b;">Email</td>
+            <td style="padding: 10px; border: 1px solid #2c7a7b;">{application.email}</td>
+        </tr>
+        <tr style="background: #e0f2f1;">
+            <td style="padding: 10px; font-weight: bold; border: 1px solid #2c7a7b;">Resume</td>
+            <td style="padding: 10px; border: 1px solid #2c7a7b;">
+                {f'<a href="https://{os.environ.get("REPLIT_DEV_DOMAIN", "localhost:5000")}{application.resume_url}" style="color: #2c7a7b;">View Resume</a>' if application.resume_url else 'Not provided'}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; font-weight: bold; border: 1px solid #2c7a7b;">Applied</td>
+            <td style="padding: 10px; border: 1px solid #2c7a7b;">{application.submitted_at.strftime('%B %d, %Y at %I:%M %p') if application.submitted_at else 'N/A'}</td>
+        </tr>
+    </table>
+    <p><strong>Experience & Qualifications:</strong></p>
+    <div style="background: #f5f5f5; padding: 15px; border-left: 4px solid #2c7a7b; margin: 10px 0;">
+        {application.experience or 'No experience details provided'}
+    </div>
+    """
+    send_email(admin_email, subject, body)
 
 @app.route('/')
 def home():
@@ -86,42 +244,80 @@ def gift_cards():
         amount = request.form.get('amount')
         recipient_email = request.form.get('recipient_email')
         message = request.form.get('message', '')
+        sender_name = request.form.get('sender_name', 'A Friend')
         
         try:
             YOUR_DOMAIN = os.environ.get('REPLIT_DEV_DOMAIN') if os.environ.get('REPLIT_DEPLOYMENT') else os.environ.get('REPLIT_DOMAINS', 'localhost:5000').split(',')[0]
             
             if stripe.api_key and stripe.api_key != 'your_stripe_secret_key_here':
                 checkout_session = stripe.checkout.Session.create(
+
+
+@app.route('/test-intake', methods=['GET', 'POST'])
+@login_required
+def test_intake():
+    """Create a test intake for demonstration purposes"""
+    if request.method == 'POST':
+        test_intake = Intake(
+            client_name=request.form.get('client_name', 'Test Client'),
+            email=request.form.get('email', 'test@example.com'),
+            medical_history=request.form.get('medical_history', 'No known medical conditions'),
+            pregnancy_stage=request.form.get('pregnancy_stage'),
+            booking_id=f'TEST-{datetime.now().strftime("%Y%m%d%H%M%S")}',
+            confirmed=False
+        )
+        db.session.add(test_intake)
+        db.session.commit()
+        
+        send_booking_notification(test_intake)
+        
+        flash(f'✓ Test intake created for {test_intake.client_name}', 'success')
+        return redirect(url_for('provider_portal'))
+    
+    return render_template('test_intake.html')
+
+
                     line_items=[{
                         'price_data': {
                             'currency': 'usd',
                             'product_data': {
                                 'name': f'Tough Love Massage Gift Card - ${amount}',
+                                'description': f'Gift card for {recipient_email}',
                             },
                             'unit_amount': int(amount) * 100,
                         },
                         'quantity': 1,
                     }],
                     mode='payment',
-                    success_url=f'https://{YOUR_DOMAIN}/gift-cards?success=true',
+                    success_url=f'https://{YOUR_DOMAIN}/gift-cards?success=true&amount={amount}&email={recipient_email}&message={message}&sender={sender_name}',
                     cancel_url=f'https://{YOUR_DOMAIN}/gift-cards',
+                    metadata={
+                        'recipient_email': recipient_email,
+                        'message': message,
+                        'sender_name': sender_name,
+                    }
                 )
                 return redirect(checkout_session.url, code=303)
             else:
-                flash('Gift card payment simulation (Stripe not configured)', 'info')
-                email_body = f"""
-                <h2>Congratulations! You've received a gift card!</h2>
-                <p>Amount: ${amount}</p>
-                <p>Message: {message}</p>
-                <p>Redeem at Tough Love Massage.</p>
-                """
-                send_email(recipient_email, 'Your Tough Love Massage Gift Card', email_body)
-                flash(f'Gift card for ${amount} sent to {recipient_email}!', 'success')
+                flash('💳 Demo Mode: Gift card payment simulation (Stripe not configured)', 'info')
+                send_gift_card_email(recipient_email, amount, message, sender_name)
+                flash(f'🎁 Gift card for ${amount} sent to {recipient_email}!', 'success')
                 return redirect(url_for('gift_cards'))
                 
         except Exception as e:
-            flash(f'Error processing payment: {str(e)}', 'error')
+            flash(f'❌ Error processing payment: {str(e)}', 'error')
             return redirect(url_for('gift_cards'))
+    
+    # Handle successful payment return
+    if request.args.get('success') == 'true':
+        amount = request.args.get('amount')
+        recipient_email = request.args.get('email')
+        message = request.args.get('message', '')
+        sender_name = request.args.get('sender', 'A Friend')
+        
+        if amount and recipient_email:
+            send_gift_card_email(recipient_email, amount, message, sender_name)
+            flash(f'🎁 Payment successful! Gift card sent to {recipient_email}', 'success')
     
     return render_template('gift_cards.html')
 
@@ -150,17 +346,30 @@ def join_team():
         db.session.add(application)
         db.session.commit()
         
-        admin_email = os.environ.get('ADMIN_EMAIL', 'admin@toughlovemassage.com')
-        email_body = f"""
-        <h2>New Team Application</h2>
-        <p><strong>Name:</strong> {name}</p>
-        <p><strong>Email:</strong> {email}</p>
-        <p><strong>Experience:</strong> {experience}</p>
-        <p><strong>Resume:</strong> {resume_url if resume_url else 'Not provided'}</p>
-        """
-        send_email(admin_email, 'New Job Application', email_body)
+        # Notify admin
+        send_application_notification(application)
         
-        flash('Thank you for your application! We will review it and get back to you soon.', 'success')
+        # Send confirmation to applicant
+        applicant_body = f"""
+        <h2 style="color: #2c7a7b;">Thank You for Your Application!</h2>
+        <p>Dear {name},</p>
+        <p>We've received your application to join the Tough Love Massage team and are excited to review your qualifications.</p>
+        <div style="background: #e0f2f1; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 5px 0;"><strong>Application Status:</strong> <span style="color: #2c7a7b;">Under Review</span></p>
+            <p style="margin: 5px 0;"><strong>Submitted:</strong> {application.submitted_at.strftime('%B %d, %Y at %I:%M %p')}</p>
+        </div>
+        <h3 style="color: #2c7a7b;">What Happens Next?</h3>
+        <ol>
+            <li>Our team will carefully review your application and resume</li>
+            <li>If your qualifications match our current needs, we'll reach out within 5-7 business days</li>
+            <li>Selected candidates will be invited for an interview</li>
+        </ol>
+        <p>Thank you for your interest in joining our team of skilled massage therapists!</p>
+        <p><em>The Tough Love Massage Team</em></p>
+        """
+        send_email(email, 'Application Received - Tough Love Massage', applicant_body)
+        
+        flash('✓ Thank you for your application! We will review it and get back to you soon.', 'success')
         return redirect(url_for('join_team'))
     
     return render_template('join_team.html')
@@ -186,15 +395,9 @@ def confirm_intake(intake_id):
     intake.confirmed = True
     db.session.commit()
     
-    email_body = f"""
-    <h2>Booking Confirmation</h2>
-    <p>Dear {intake.client_name},</p>
-    <p>Your booking has been confirmed by our team!</p>
-    <p>We look forward to seeing you at Tough Love Massage.</p>
-    """
-    send_email(intake.email, 'Booking Confirmed', email_body)
+    send_confirmation_email(intake)
     
-    flash('Intake confirmed and client notified!', 'success')
+    flash(f'✓ Intake confirmed for {intake.client_name} and notification email sent!', 'success')
     return redirect(url_for('provider_portal'))
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -224,12 +427,13 @@ def logout():
 
 @app.route('/webhook/fullslate', methods=['POST'])
 def fullslate_webhook():
+    """Handle incoming bookings from FullSlate"""
     try:
         data = request.json
         intake = Intake(
             client_name=data.get('client_name'),
             email=data.get('email'),
-            medical_history=data.get('medical_history'),
+            medical_history=data.get('medical_history', ''),
             pregnancy_stage=data.get('pregnancy_stage'),
             booking_id=data.get('booking_id'),
             confirmed=False
@@ -237,13 +441,27 @@ def fullslate_webhook():
         db.session.add(intake)
         db.session.commit()
         
-        provider_emails = [p.username for p in Provider.query.all()]
-        for email in provider_emails:
-            send_email(email, 'New Booking Received', 
-                      f'New booking from {intake.client_name}. Please review in the provider portal.')
+        # Send notifications to all providers
+        send_booking_notification(intake)
         
-        return jsonify({'status': 'success'}), 200
+        # Send acknowledgment to client
+        client_body = f"""
+        <h2 style="color: #2c7a7b;">Booking Received!</h2>
+        <p>Dear {intake.client_name},</p>
+        <p>Thank you for choosing Tough Love Massage. We've received your booking request and intake form.</p>
+        <div style="background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0;">
+            <p style="margin: 0;"><strong>⏳ Pending Confirmation</strong></p>
+            <p style="margin: 10px 0 0 0;">Our team is reviewing your information and will confirm your appointment shortly.</p>
+        </div>
+        <p>You'll receive a confirmation email once your appointment has been reviewed and approved.</p>
+        <p>If you have any questions, please don't hesitate to contact us.</p>
+        <p><em>The Tough Love Massage Team</em></p>
+        """
+        send_email(intake.email, 'Booking Request Received - Tough Love Massage', client_body)
+        
+        return jsonify({'status': 'success', 'intake_id': intake.id}), 200
     except Exception as e:
+        print(f"Webhook error: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
 with app.app_context():

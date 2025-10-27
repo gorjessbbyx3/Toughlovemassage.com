@@ -1,0 +1,50 @@
+
+{% extends "base.html" %}
+
+{% block title %}Create Test Intake - Tough Love Massage{% endblock %}
+
+{% block content %}
+<section class="py-5" style="margin-top: 80px;">
+    <div class="container" data-aos="fade-up">
+        <div class="row">
+            <div class="col-lg-6 mx-auto">
+                <div class="card shadow">
+                    <div class="card-header" style="background: linear-gradient(135deg, #2c7a7b 0%, #1a4d4d 100%); color: white;">
+                        <h3 class="mb-0">Create Test Intake</h3>
+                        <small>For testing email notifications and provider portal</small>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="/test-intake">
+                            <div class="mb-3">
+                                <label for="client_name" class="form-label">Client Name</label>
+                                <input type="text" class="form-control" id="client_name" name="client_name" value="Jane Doe" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" value="jane.doe@example.com" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="medical_history" class="form-label">Medical History</label>
+                                <textarea class="form-control" id="medical_history" name="medical_history" rows="4">Lower back pain from desk work. No allergies or medications.</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="pregnancy_stage" class="form-label">Pregnancy Stage (Optional)</label>
+                                <select class="form-select" id="pregnancy_stage" name="pregnancy_stage">
+                                    <option value="">Not Pregnant</option>
+                                    <option value="First Trimester">First Trimester</option>
+                                    <option value="Second Trimester">Second Trimester</option>
+                                    <option value="Third Trimester">Third Trimester</option>
+                                </select>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Create Test Intake</button>
+                                <a href="/provider-portal" class="btn btn-secondary">Back to Portal</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
