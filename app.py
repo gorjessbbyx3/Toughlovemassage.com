@@ -830,76 +830,99 @@ def fullslate_webhook():
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
 with app.app_context():
-    db.create_all()
+    try:
+        db.create_all()
+        print("✓ Database tables created/verified")
+    except Exception as e:
+        print(f"✗ Error creating tables: {e}")
+        db.session.rollback()
     
     # Initialize default locations
     try:
         location_count = Location.query.count()
-    except Exception:
+    except Exception as e:
+        print(f"⚠ Error checking locations: {e}")
+        db.session.rollback()
         location_count = 0
     
     if location_count == 0:
-        downtown = Location(
-            name="Downtown Studio",
-            address="123 City Street, Downtown",
-            phone="(123) 456-7890",
-            hours="Mon-Fri 9AM-8PM, Sat 10AM-6PM"
-        )
-        suburban = Location(
-            name="Suburban Retreat",
-            address="456 Peaceful Lane, Suburbs",
-            phone="(123) 456-7891",
-            hours="Mon-Sat 10AM-7PM, Sun 12PM-5PM"
-        )
-        db.session.add(downtown)
-        db.session.add(suburban)
-        db.session.commit()
-        print("✓ Created default locations")
+        try:
+            downtown = Location(
+                name="Downtown Studio",
+                address="123 City Street, Downtown",
+                phone="(123) 456-7890",
+                hours="Mon-Fri 9AM-8PM, Sat 10AM-6PM"
+            )
+            suburban = Location(
+                name="Suburban Retreat",
+                address="456 Peaceful Lane, Suburbs",
+                phone="(123) 456-7891",
+                hours="Mon-Sat 10AM-7PM, Sun 12PM-5PM"
+            )
+            db.session.add(downtown)
+            db.session.add(suburban)
+            db.session.commit()
+            print("✓ Created default locations")
+        except Exception as e:
+            print(f"✗ Error creating locations: {e}")
+            db.session.rollback()
     
     # Initialize default treatments
     try:
         treatment_count = Treatment.query.count()
-    except Exception:
+    except Exception as e:
+        print(f"⚠ Error checking treatments: {e}")
+        db.session.rollback()
         treatment_count = 0
     
     if treatment_count == 0:
-        treatments_data = [
-            {"name": "Swedish Massage", "description": "Classic relaxation massage", "duration": 60, "price": 120},
-            {"name": "Deep Tissue Massage", "description": "Therapeutic deep muscle work", "duration": 60, "price": 130},
-            {"name": "Hot Stone Massage", "description": "Heated stones for deep relaxation", "duration": 90, "price": 150},
-            {"name": "Prenatal Massage", "description": "Specialized care for expecting mothers", "duration": 60, "price": 125},
-        ]
-        for t_data in treatments_data:
-            treatment = Treatment(
-                name=t_data["name"],
-                description=t_data["description"],
-                duration_minutes=t_data["duration"],
-                price=t_data["price"]
-            )
-            db.session.add(treatment)
-        db.session.commit()
-        print("✓ Created default treatments")
+        try:
+            treatments_data = [
+                {"name": "Swedish Massage", "description": "Classic relaxation massage", "duration": 60, "price": 120},
+                {"name": "Deep Tissue Massage", "description": "Therapeutic deep muscle work", "duration": 60, "price": 130},
+                {"name": "Hot Stone Massage", "description": "Heated stones for deep relaxation", "duration": 90, "price": 150},
+                {"name": "Prenatal Massage", "description": "Specialized care for expecting mothers", "duration": 60, "price": 125},
+            ]
+            for t_data in treatments_data:
+                treatment = Treatment(
+                    name=t_data["name"],
+                    description=t_data["description"],
+                    duration_minutes=t_data["duration"],
+                    price=t_data["price"]
+                )
+                db.session.add(treatment)
+            db.session.commit()
+            print("✓ Created default treatments")
+        except Exception as e:
+            print(f"✗ Error creating treatments: {e}")
+            db.session.rollback()
     
     admin_email = os.environ.get('ADMIN_EMAIL')
     admin_password = os.environ.get('ADMIN_PASSWORD')
     
     try:
         provider_count = Provider.query.count()
-    except Exception:
+    except Exception as e:
+        print(f"⚠ Error checking providers: {e}")
+        db.session.rollback()
         provider_count = 0
     
     if admin_email and admin_password and provider_count == 0:
-        initial_provider = Provider(
-            username=admin_email,
-            password_hash=generate_password_hash(admin_password),
-            full_name="Administrator",
-            email=admin_email,
-            is_admin=True
-        )
-        db.session.add(initial_provider)
-        db.session.commit()
-        print(f"✓ Created initial admin account: {admin_email}")
-        print("⚠ IMPORTANT: Change your password immediately after first login!")
+        try:
+            initial_provider = Provider(
+                username=admin_email,
+                password_hash=generate_password_hash(admin_password),
+                full_name="Administrator",
+                email=admin_email,
+                is_admin=True
+            )
+            db.session.add(initial_provider)
+            db.session.commit()
+            print(f"✓ Created initial admin account: {admin_email}")
+            print("⚠ IMPORTANT: Change your password immediately after first login!")
+        except Exception as e:
+            print(f"✗ Error creating admin account: {e}")
+            db.session.rollback()
     elif provider_count == 0:
         print("\n" + "="*70)
         print("⚠ WARNING: No provider accounts exist!")
