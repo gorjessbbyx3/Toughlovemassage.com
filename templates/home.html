@@ -2,119 +2,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- Hero Brand Section -->
-<section class="luxury-brand-hero" data-aos="fade-in">
-    <div class="brand-overlay">
-        <div class="brand-content">
-            <h1 class="luxury-title">TOUGH LOVE MASSAGE</h1>
-            <div class="luxury-divider"></div>
-            <p class="luxury-subtitle">Therapeutic Excellence Since 2009</p>
-            <p class="luxury-tagline">Where Healing Meets Precision</p>
+<!-- Full Screen Split Hero -->
+<section class="split-hero-section">
+    <div class="split-hero-container">
+        <!-- Downtown Studio (Left) -->
+        <div class="hero-split hero-split-left">
+            <div class="location-label">Downtown Studio</div>
+            <a href="/location-downtown" class="hero-split-overlay"></a>
         </div>
-    </div>
-</section>
-
-<!-- Location Selection -->
-<section class="location-selection">
-    <div class="container-fluid p-0">
-        <div class="row g-0">
-            <div class="col-lg-6 luxury-location-card" data-aos="fade-right" data-aos-delay="200">
-                <a href="/location-downtown" class="location-link">
-                    <div class="location-image-wrapper">
-                        <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1200&q=80" alt="Downtown Studio - Urban Wellness" class="location-showcase-image">
-                        <div class="location-gradient-overlay"></div>
-                        <div class="location-content-overlay">
-                            <div class="location-badge">DOWNTOWN STUDIO</div>
-                            <h2 class="location-title">Urban Wellness Center</h2>
-                            <p class="location-description">Deep tissue expertise in the heart of the city</p>
-                            <div class="location-cta">
-                                <span class="cta-text">EXPLORE LOCATION</span>
-                                <span class="cta-arrow">→</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-6 luxury-location-card" data-aos="fade-left" data-aos-delay="400">
-                <a href="/location-suburban" class="location-link">
-                    <div class="location-image-wrapper">
-                        <img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=1200&q=80" alt="Suburban Retreat - Tranquil Sanctuary" class="location-showcase-image">
-                        <div class="location-gradient-overlay"></div>
-                        <div class="location-content-overlay">
-                            <div class="location-badge">SUBURBAN RETREAT</div>
-                            <h2 class="location-title">Tranquil Sanctuary</h2>
-                            <p class="location-description">Prenatal and restorative therapies in serene surroundings</p>
-                            <div class="location-cta">
-                                <span class="cta-text">EXPLORE LOCATION</span>
-                                <span class="cta-arrow">→</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
+        
+        <!-- Suburban Retreat (Right) -->
+        <div class="hero-split hero-split-right">
+            <div class="location-label">Suburban Retreat</div>
+            <a href="/location-suburban" class="hero-split-overlay"></a>
         </div>
-    </div>
-</section>
-
-<!-- Philosophy Section -->
-<section class="luxury-philosophy" data-aos="fade-up">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 text-center">
-                <h2 class="philosophy-title">Our Philosophy</h2>
-                <div class="luxury-divider mx-auto"></div>
-                <p class="philosophy-text">
-                    At Tough Love Massage, we believe in the transformative power of therapeutic touch. 
-                    Our skilled practitioners combine deep anatomical knowledge with intuitive healing, 
-                    delivering results that exceed expectations. Whether you're an athlete seeking recovery 
-                    or someone in need of gentle prenatal care, we tailor every session to your unique needs.
-                </p>
+        
+        <!-- Center Content -->
+        <div class="hero-center-content">
+            <h1 class="hero-main-title">Discover Ultimate Rejuvenation</h1>
+            <div class="hero-subtitle">
+                <p>The ultimate relaxation experience.</p>
+                <p>A sanctuary for the senses. 5-star service.</p>
+                <p>that exceeds expectations.</p>
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- Testimonials -->
-<section class="luxury-testimonials" data-aos="fade-up">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="testimonial-card">
-                    <div class="quote-icon">"</div>
-                    <p class="testimonial-quote">By far the best place to get a massage, especially if you are an athlete or need some deep tissue work.</p>
-                    <div class="testimonial-author">
-                        <div class="author-line"></div>
-                        <span class="author-name">ANDREA L.</span>
-                        <div class="author-line"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Experience Highlights -->
-<section class="experience-highlights" data-aos="fade-up">
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-md-4 mb-4">
-                <div class="highlight-item">
-                    <div class="highlight-number">15+</div>
-                    <div class="highlight-label">Years of Excellence</div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="highlight-item">
-                    <div class="highlight-number">10K+</div>
-                    <div class="highlight-label">Satisfied Clients</div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="highlight-item">
-                    <div class="highlight-number">2</div>
-                    <div class="highlight-label">Premium Locations</div>
-                </div>
-            </div>
+            <div class="hero-testimonial">— Andrea L.</div>
+            <a href="/book" class="hero-cta-button">Book Your Session</a>
         </div>
     </div>
 </section>
