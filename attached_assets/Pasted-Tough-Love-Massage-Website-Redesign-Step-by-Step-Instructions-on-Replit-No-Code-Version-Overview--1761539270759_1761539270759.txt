@@ -1,0 +1,62 @@
+Tough Love Massage Website Redesign: Step-by-Step Instructions on Replit (No Code Version)
+Overview
+This guide elevates your current minimal site (https://toughlovemassage.com), which features only the testimonial: “By far the best place to get a massage, especially if you are an athlete or need some deep tissue work.” - Andrea L. We’ll incorporate this testimonial, add a professional treatment menu (e.g., Deep Tissue $120/60min, Prenatal $130/90min, Sports Recovery $110/45min—based on typical spa services; customize with your real menu), service providers (fictional examples like Jane Doe: Deep Tissue Specialist, John Smith: Prenatal Expert; replace with real ones), hours, phone numbers, and addresses (placeholders like Downtown Studio: Mon-Fri 9AM-8PM, Sat 10AM-6PM, (123) 456-7890, 123 City St; Suburban Retreat: Tue-Sun 10AM-7PM, (987) 654-3210, 456 Green Ln). Images use high-quality stock URLs for a Forbes 5-star luxury feel (e.g., elegant spa exteriors, interiors). The site uses Flask on Replit for backend, Neon DB for data, FullSlate for booking with intake forms, and email notifications. Focus on instructions, page contents, and styling notes—no example code provided.
+Step 1: Replit Setup and Project Initialization
+1.  Go to replit.com and sign up or log in (free tier sufficient; upgrade to ~$7/month for more resources if needed).
+2.  Create a new Repl using the Python template, name it “toughlovemassage-website”, set visibility to Public (or Private on paid plan).
+3.  In the editor:
+	•  Install packages via the Packages tab: flask for the web framework, psycopg2-binary for database connections, flask-login for authentication, werkzeug for security.
+	•  Create folders: “templates” for page files, “static” with subfolders “css” for styles, “js” for scripts, “images” for assets (download recommended images and upload here).
+	•  Edit the hidden “.replit” file to set the run command to execute the main Python file.
+	•  Sign up for services:
+		•  Neon.tech (free tier): Create a Postgres database, note connection details. Create tables for intakes (fields: id, client_name, email, medical_history, pregnancy_stage, booking_id, confirmed), providers (id, username, password_hash), applications (id, name, email, experience, resume_url). Insert sample provider data.
+		•  FullSlate: Sign up, configure services matching the treatment menu, locations (Downtown Studio, Suburban Retreat), providers. Add custom intake fields: Medical History (required for new clients), Pregnancy Stage (for prenatal).
+		•  Stripe: Sign up for gift card payments, get API keys.
+		•  Email: Set up no-reply@toughlovemassage.com with SMTP details for notifications.
+4.  Run the Repl to test hosting. For production, connect a custom domain or migrate to Vercel/Netlify.
+Step 2: Backend Setup Instructions
+Create a main Python file in the root. Define the app with a secret key. Set up a function to connect to Neon DB. Create an email sending function using SMTP for no-reply notifications. Define a user class for login management. Initialize login manager.
+Define routes for: home (landing), location-downtown, location-suburban, gift-cards (GET/POST for payments via Stripe, send email), join-team (POST to store in DB, email admin), policies, book (for FullSlate embed), provider-portal (login-required, fetch unconfirmed intakes from DB), confirm (update DB, send client email), login (check credentials from DB), logout.
+For FullSlate: Use webhooks to insert booking data into intakes table and notify providers via email.
+Step 3: Global Styles and Scripts Notes
+Styles: Import elegant fonts (Playfair Display for headings, Montserrat for body). Set body background to light gray, text dark. Heroes: Full-cover backgrounds, 80vh height, centered white text with shadow. Primary buttons: Deep teal background. Footer: Dark teal, white text. Location images: Cursor pointer, hover scale effect. Animations: 1s duration.
+Scripts: On page load, add click handlers for location images to redirect. Initialize animations. For gift cards, handle payment elements if using Stripe.
+Include Bootstrap for responsiveness, AOS for fade/zoom animations.
+Step 4: Base Template Instructions
+All pages extend a base layout for consistency. Include meta tags for SEO (description: “Luxury massage services at Tough Love Massage - Elevating wellness to Forbes 5-star standards.”). Link styles, scripts, Bootstrap, AOS.
+Header: Dark navbar with brand “Tough Love Massage”, collapsible menu: Home, Locations (dropdown: Downtown Studio, Suburban Retreat), Book Now, Gift Cards, Join Our Team, Policies.
+Content block: Where page-specific content goes.
+Footer: Centered container with rows: Column 1 - Downtown details (hours, phone, address); Column 2 - Suburban details; Column 3 - Links (Gift Card, Join Team, Policies) and social (Instagram, Facebook). Copyright at bottom.
+Include Bootstrap JS bundle.
+Step 5: Individual Page Contents and Styling Notes
+Landing Page (Home)
+Content: Hero section with background image of a luxurious spa exterior (URL: https://cache.marriott.com/is/image/marriotts7prod/ak-yhmak-exterior-12768:Wide-Hor?wid=1336&fit=constrain), fade-in animation. Display large heading “Discover Ultimate Rejuvenation”, lead paragraph “Tailored deep tissue therapies for athletes and wellness enthusiasts in luxurious settings.” Below, row with two clickable images side-by-side: Downtown Studio (same URL as hero, alt: “Downtown Studio Exterior”, zoom-in), Suburban Retreat (URL: https://st.hzcdn.com/simgs/5a51a51705b43c14_14-0070/_.jpg, alt: “Suburban Retreat Exterior”, zoom-in). Each with heading below. “Book Your Session” button.
+Testimonial section: Centered heading “What Our Clients Say”, blockquote with original testimonial (fade-up).
+Styling: Hero centered, white text. Images rounded, shadowed, responsive columns.
+Location Pages (Downtown Studio and Suburban Retreat)
+Content (Downtown example; adjust for Suburban with “Escape to nature-inspired retreat with holistic vibes”): Hero with interior background (URL: https://dropinblog.net/cdn-cgi/image/fit=scale-down,width=1140/34246798/files/featured/spa_interior.jpg), fade-in. Heading “Welcome to Downtown Studio”, paragraph “Indulge in bespoke therapies amid the vibrant city pulse.”
+Main section (fade-up): About paragraph “State-of-the-art facilities for athletic recovery.” Treatment Menu: Unordered list - Deep Tissue $120/60min, Prenatal $130/90min, Sports Recovery $110/45min.
+Service Providers: Row with columns, each: Image (URL: https://s3.amazonaws.com/customink-iotw-east-prod/images/15005/original/CustomInk%20Photo.JPG?1316201816, alt: “Jane Doe”), paragraph “Jane Doe - Deep Tissue Specialist” (add more providers).
+Hours & Contact: Paragraph with details, embedded Google Map iframe (replace pb with real map).
+Book Now: Heading, FullSlate widget embed.
+Styling: List grouped, images fluid/rounded, map full-width 300px height.
+Gift Cards Page
+Content: Hero with spa background (URL: https://www.creativefabrica.com/wp-content/uploads/2023/07/06/Relaxe-Beauty-Spa-Hero-Section-Figma-Graphics-73820120-1.jpg). Heading “Gift the Gift of Relaxation”, paragraph “Surprise loved ones with luxurious spa experiences.”
+Main section: Paragraph “Choose from $50, $100, $200. Digital or physical.” Image of elegant gift card (URL: https://i.etsystatic.com/20470346/r/il/adf0df/4066600334/il_fullxfull.4066600334_pn3e.jpg, fluid).
+Form: Fields for amount (select: $50, $100, etc.), recipient email (input), message (textarea), payment element, submit button “Purchase”.
+Styling: Form controls full-width, primary button.
+Join Our Team Page
+Content: Hero with massage room background (URL: https://saunadekorspa.b-cdn.net/wp-content/uploads/2023/10/dubai-massage-room-.jpg). Heading “Join Our Elite Team”, paragraph “Become part of a Forbes-level spa.”
+Main section: Headings “Current Openings” with list (Massage Therapist, Prenatal Specialist). “Apply Now” form: Fields for name (text), email (email), resume (file), experience (textarea), submit button.
+Styling: Unordered list, form fields full-width.
+Policies Page
+Content: Main section with heading “Our Policies”. Accordion items: Cancellation Policy (24-hour notice or fee), Privacy Policy (GDPR/HIPAA compliant), add more as needed.
+Styling: Accordion collapsible, first open by default.
+Provider Portal Page
+Content: If not logged in: Login form with username (text), password (password), submit.
+If logged in: Heading “Provider Portal”. Table: Columns Client, Intake (history), Confirm (link to confirm). Rows from DB unconfirmed intakes. Logout link.
+Styling: Table striped/responsive.
+Step 6: Integrations and Testing
+FullSlate: Embed widget in book/locations. Sync bookings to Neon via webhooks, trigger emails.
+Testing: Run Repl, check responsiveness, forms, logins, emails. Optimize with tools like Lighthouse.
+Deployment: Push to GitHub, host on Vercel for free with custom domain.
