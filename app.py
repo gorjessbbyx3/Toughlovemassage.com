@@ -685,50 +685,6 @@ def provider_add_intake_note(intake_id):
     flash('✓ Appointment note added', 'success')
     return redirect(url_for('provider_portal'))
 
-                    line_items=[{
-                        'price_data': {
-                            'currency': 'usd',
-                            'product_data': {
-                                'name': f'Tough Love Massage Gift Card - ${amount}',
-                                'description': f'Gift card for {recipient_email}',
-                            },
-                            'unit_amount': int(amount) * 100,
-                        },
-                        'quantity': 1,
-                    }],
-                    mode='payment',
-                    success_url=f'https://{YOUR_DOMAIN}/gift-cards?success=true&amount={amount}&email={recipient_email}&message={message}&sender={sender_name}',
-                    cancel_url=f'https://{YOUR_DOMAIN}/gift-cards',
-                    metadata={
-                        'recipient_email': recipient_email,
-                        'message': message,
-                        'sender_name': sender_name,
-                    }
-                )
-                return redirect(checkout_session.url, code=303)
-            else:
-                flash('💳 Demo Mode: Gift card payment simulation (Stripe not configured)', 'info')
-                send_gift_card_email(recipient_email, amount, message, sender_name)
-                flash(f'🎁 Gift card for ${amount} sent to {recipient_email}!', 'success')
-                return redirect(url_for('gift_cards'))
-                
-        except Exception as e:
-            flash(f'❌ Error processing payment: {str(e)}', 'error')
-            return redirect(url_for('gift_cards'))
-    
-    # Handle successful payment return
-    if request.args.get('success') == 'true':
-        amount = request.args.get('amount')
-        recipient_email = request.args.get('email')
-        message = request.args.get('message', '')
-        sender_name = request.args.get('sender', 'A Friend')
-        
-        if amount and recipient_email:
-            send_gift_card_email(recipient_email, amount, message, sender_name)
-            flash(f'🎁 Payment successful! Gift card sent to {recipient_email}', 'success')
-    
-    return render_template('gift_cards.html')
-
 @app.route('/join-team', methods=['GET', 'POST'])
 def join_team():
     if request.method == 'POST':
