@@ -12,7 +12,24 @@ import stripe
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET") or "dev-secret-key-change-in-production"
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+
+# Construct DATABASE_URL from individual components if needed
+database_url = os.environ.get("DATABASE_URL")
+if not database_url or not database_url.startswith("postgresql://"):
+    pghost = os.environ.get("PGHOST")
+    pguser = os.environ.get("PGUSER")
+    pgdb = os.environ.get("PGDATABASE")
+    pgpass = os.environ.get("PGPASSWORD")
+    pgport = os.environ.get("PGPORT", "5432")
+    
+    if all([pghost, pguser, pgdb, pgpass]):
+        database_url = f"postgresql://{pguser}:{pgpass}@{pghost}:{pgport}/{pgdb}?sslmode=require"
+        print(f"✓ Constructed DATABASE_URL from individual Postgres environment variables")
+    else:
+        print(f"✗ ERROR: DATABASE_URL not set and missing required Postgres environment variables")
+        database_url = None
+
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
