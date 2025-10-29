@@ -359,7 +359,7 @@
                                     <small class="text-muted">{{ apt.treatment.name if apt.treatment else 'General Session' }}</small>
                                 </div>
                                 <div class="col-md-3">
-                                    {% if apt.client.medical_alerts|length > 0 %}
+                                    {% if apt.client|has_active_alerts %}
                                     <span class="medical-alert-badge high">
                                         <i class="fas fa-exclamation-triangle"></i> Medical Alert
                                     </span>
@@ -437,9 +437,9 @@
                                 </small>
                             </div>
                             <div class="col-md-3">
-                                {% if apt.client.medical_alerts|length > 0 %}
+                                {% if apt.client|has_active_alerts %}
                                 <span class="medical-alert-badge high">
-                                    <i class="fas fa-exclamation-triangle"></i> {{ apt.client.medical_alerts|length }} Alert(s)
+                                    <i class="fas fa-exclamation-triangle"></i> {{ apt.client|count_active_alerts }} Alert(s)
                                 </span>
                                 {% endif %}
                                 {% if apt.client.preferred_pressure %}
@@ -478,7 +478,7 @@
                                 <small class="text-muted">{{ apt.treatment.name if apt.treatment else 'General Session' }}</small>
                             </div>
                             <div class="col-md-2">
-                                {% if apt.client.medical_alerts|length > 0 %}
+                                {% if apt.client|has_active_alerts %}
                                 <span class="medical-alert-badge">Alert</span>
                                 {% endif %}
                             </div>

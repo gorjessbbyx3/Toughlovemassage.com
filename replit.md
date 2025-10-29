@@ -152,6 +152,19 @@ ADMIN_EMAIL=admin@toughlovemassage.com
 
 ## Recent Changes
 
+### 2025-10-29 - Enhanced Provider Portal with Practice Management
+- **Major database expansion**: Added 5 new models (Client, Appointment, SOAPNote, MedicalAlert, PerformanceMetric, Treatment)
+- **HIPAA-compliant architecture**: Full audit trails with created_by, updated_by, timestamps on all records
+- **Provider Portal redesigned**: 6-tab luxury spa interface (Dashboard, Schedule, SOAP Notes, Clients, Analytics, Intakes)
+- **Dashboard features**: Quick stats cards, today's schedule preview, active medical alerts, quick actions
+- **Schedule management**: Today's and upcoming appointments with client prep cards, medical alert badges
+- **SOAP Notes system**: Structured clinical documentation (Subjective, Objective, Assessment, Plan) with pain tracking
+- **Analytics dashboard**: Performance metrics with Chart.js visualizations, session/revenue tracking
+- **Medical alerts**: Severity-based contraindication tracking with active/inactive status
+- **Data migration tools**: Helper functions for backward compatibility, seed_data.py for sample data
+- **Custom Jinja2 filters**: Safe medical alert counting and display
+- **Mobile-optimized**: Responsive design with luxury spa styling throughout
+
 ### 2025-10-29 - Luxury Spa Location Pages
 - **Complete redesign** of location pages with Forbes 5-star spa aesthetic
 - Created **10 new pages** (5 per location: Landing, Services, Booking, Team, Info)

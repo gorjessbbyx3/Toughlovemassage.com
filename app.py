@@ -30,6 +30,22 @@ login_manager.login_view = 'login'
 
 stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 
+@app.template_filter('count_active_alerts')
+def count_active_alerts(client):
+    """Count active medical alerts for a client"""
+    if not client:
+        return 0
+    from models import MedicalAlert
+    return MedicalAlert.query.filter_by(client_id=client.id, is_active=True).count()
+
+@app.template_filter('has_active_alerts')
+def has_active_alerts(client):
+    """Check if client has any active medical alerts"""
+    if not client:
+        return False
+    from models import MedicalAlert
+    return MedicalAlert.query.filter_by(client_id=client.id, is_active=True).count() > 0
+
 class User(UserMixin):
     def __init__(self, id, username):
         self.id = id
