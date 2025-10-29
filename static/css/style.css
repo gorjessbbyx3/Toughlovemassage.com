@@ -123,9 +123,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hero-logo img {
-    width: 100px;
-    height: 100px;
-    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+    width: 500px;
+    max-width: 90vw;
+    height: auto;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
 }
 
 .hero-center-content {
