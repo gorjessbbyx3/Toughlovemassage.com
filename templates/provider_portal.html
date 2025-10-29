@@ -3,126 +3,676 @@
 {% block title %}Provider Portal - Tough Love Massage{% endblock %}
 
 {% block content %}
-<section class="py-5" style="margin-top: 80px;">
-    <div class="container" data-aos="fade-up">
-        <div class="row">
-            <div class="col-lg-11 mx-auto">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1>Provider Portal</h1>
-                    <div>
-                        {% if provider and provider.is_admin %}
-                        <a href="/admin-dashboard" class="btn btn-primary me-2">
-                            <i class="fas fa-shield-alt"></i> Admin Dashboard
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+.provider-portal {
+    margin-top: 80px;
+    min-height: calc(100vh - 80px);
+}
+
+.portal-header {
+    background: linear-gradient(135deg, #7eb89e 0%, #5a9a7e 100%);
+    color: white;
+    padding: 30px 0;
+    margin-bottom: 30px;
+}
+
+.portal-tabs {
+    border-bottom: 2px solid #7eb89e;
+    margin-bottom: 30px;
+}
+
+.portal-tabs .nav-link {
+    color: #2C2C2C;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 15px 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.portal-tabs .nav-link:hover {
+    background: #f9f7f4;
+    border-bottom-color: #7eb89e;
+}
+
+.portal-tabs .nav-link.active {
+    color: #7eb89e;
+    background: #f9f7f4;
+    border-bottom-color: #7eb89e;
+    font-weight: 600;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid #7eb89e;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.stat-card .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #7eb89e;
+    margin: 10px 0;
+}
+
+.stat-card .stat-label {
+    color: #666;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.appointment-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 4px solid #7eb89e;
+    transition: all 0.3s ease;
+}
+
+.appointment-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateX(5px);
+}
+
+.appointment-time {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #7eb89e;
+}
+
+.client-name {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #2C2C2C;
+}
+
+.medical-alert-badge {
+    background: #ffc107;
+    color: #856404;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.medical-alert-badge.high {
+    background: #dc3545;
+    color: white;
+}
+
+.medical-alert-badge.low {
+    background: #28a745;
+    color: white;
+}
+
+.btn-spa {
+    background: #7eb89e;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-spa:hover {
+    background: #5a9a7e;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(126, 184, 158, 0.3);
+}
+
+.btn-spa-outline {
+    background: transparent;
+    color: #7eb89e;
+    border: 2px solid #7eb89e;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-spa-outline:hover {
+    background: #7eb89e;
+    color: white;
+}
+
+.soap-note-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    color: #2C2C2C;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #7eb89e;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #ddd;
+    margin-bottom: 20px;
+}
+
+.quick-action-btn {
+    background: white;
+    border: 2px solid #7eb89e;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.quick-action-btn:hover {
+    background: #7eb89e;
+    color: white;
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(126, 184, 158, 0.3);
+}
+
+.quick-action-btn i {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 10px;
+}
+</style>
+
+<section class="provider-portal">
+    <!-- Header -->
+    <div class="portal-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 style="font-family: 'Cormorant Garamond', serif; margin: 0;">
+                        <i class="fas fa-user-md"></i> Provider Portal
+                    </h1>
+                    <p style="margin: 10px 0 0 0; opacity: 0.9;">Welcome back, {{ provider.full_name or provider.username }}!</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    {% if provider and provider.is_admin %}
+                    <a href="/admin-dashboard" class="btn btn-light me-2">
+                        <i class="fas fa-shield-alt"></i> Admin Dashboard
+                    </a>
+                    {% endif %}
+                    <a href="/logout" class="btn btn-outline-light">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs portal-tabs" id="portalTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button">
+                    <i class="fas fa-home"></i> Dashboard
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button">
+                    <i class="fas fa-calendar-alt"></i> Schedule
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="soap-tab" data-bs-toggle="tab" data-bs-target="#soap" type="button">
+                    <i class="fas fa-notes-medical"></i> SOAP Notes
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="clients-tab" data-bs-toggle="tab" data-bs-target="#clients" type="button">
+                    <i class="fas fa-users"></i> Clients
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="intakes-tab" data-bs-toggle="tab" data-bs-target="#intakes" type="button">
+                    <i class="fas fa-clipboard-list"></i> Intakes 
+                    {% if intakes|length > 0 %}
+                    <span class="badge bg-danger ms-1">{{ intakes|length }}</span>
+                    {% endif %}
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="portalTabsContent">
+            
+            <!-- DASHBOARD TAB -->
+            <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+                <!-- Quick Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-label">Today's Appointments</div>
+                            <div class="stat-number">{{ todays_appointments|length }}</div>
+                            <small class="text-muted">Scheduled for {{ today.strftime('%B %d') }}</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Clients</div>
+                            <div class="stat-number">{{ total_clients }}</div>
+                            <small class="text-muted">Lifetime clients</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-label">This Month</div>
+                            <div class="stat-number">{{ completed_this_month }}</div>
+                            <small class="text-muted">Sessions completed</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-label">Revenue (MTD)</div>
+                            <div class="stat-number">${{ "%.0f"|format(total_revenue_month) }}</div>
+                            <small class="text-muted">Month-to-date revenue</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <h3 class="section-title">Quick Actions</h3>
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <a href="#schedule" data-bs-toggle="tab" class="text-decoration-none">
+                            <div class="quick-action-btn">
+                                <i class="fas fa-calendar-plus" style="color: #7eb89e;"></i>
+                                <div style="font-weight: 500;">View Schedule</div>
+                            </div>
                         </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="#soap" data-bs-toggle="tab" class="text-decoration-none">
+                            <div class="quick-action-btn">
+                                <i class="fas fa-notes-medical" style="color: #7eb89e;"></i>
+                                <div style="font-weight: 500;">Add SOAP Note</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="#clients" data-bs-toggle="tab" class="text-decoration-none">
+                            <div class="quick-action-btn">
+                                <i class="fas fa-user-plus" style="color: #7eb89e;"></i>
+                                <div style="font-weight: 500;">Find Client</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="#intakes" data-bs-toggle="tab" class="text-decoration-none">
+                            <div class="quick-action-btn">
+                                <i class="fas fa-clipboard-check" style="color: #7eb89e;"></i>
+                                <div style="font-weight: 500;">Review Intakes</div>
+                                {% if intakes|length > 0 %}
+                                <span class="badge bg-danger mt-2">{{ intakes|length }} pending</span>
+                                {% endif %}
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Today's Schedule Preview -->
+                <h3 class="section-title">Today's Schedule</h3>
+                {% if todays_appointments %}
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% for apt in todays_appointments[:3] %}
+                        <div class="appointment-card">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <div class="appointment-time">{{ apt.start_time.strftime('%I:%M %p') }}</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="client-name">{{ apt.client.name }}</div>
+                                    <small class="text-muted">{{ apt.treatment.name if apt.treatment else 'General Session' }}</small>
+                                </div>
+                                <div class="col-md-3">
+                                    {% if apt.client.medical_alerts|length > 0 %}
+                                    <span class="medical-alert-badge high">
+                                        <i class="fas fa-exclamation-triangle"></i> Medical Alert
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <button class="btn btn-spa btn-sm">View Details</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% if todays_appointments|length > 3 %}
+                        <div class="text-center mt-3">
+                            <a href="#schedule" data-bs-toggle="tab" class="btn btn-spa-outline">
+                                View All {{ todays_appointments|length }} Appointments
+                            </a>
+                        </div>
                         {% endif %}
-                        <a href="/logout" class="btn btn-secondary">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a>
                     </div>
                 </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-calendar-check"></i>
+                    <h4>No Appointments Today</h4>
+                    <p>Enjoy your day off!</p>
+                </div>
+                {% endif %}
+
+                <!-- Active Medical Alerts -->
+                {% if active_alerts %}
+                <h3 class="section-title mt-4">Active Medical Alerts</h3>
+                <div class="row">
+                    {% for alert in active_alerts[:5] %}
+                    <div class="col-md-12 mb-3">
+                        <div class="appointment-card">
+                            <div class="row align-items-center">
+                                <div class="col-md-1">
+                                    <i class="fas fa-exclamation-circle fa-2x" style="color: {{ 'red' if alert.severity == 'high' else 'orange' }};"></i>
+                                </div>
+                                <div class="col-md-5">
+                                    <strong>{{ alert.client.name }}</strong>
+                                    <div class="text-muted">{{ alert.alert_type }}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <small>{{ alert.description[:100] }}...</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- SCHEDULE TAB -->
+            <div class="tab-pane fade" id="schedule" role="tabpanel">
+                <h3 class="section-title">Your Schedule</h3>
                 
-                <!-- Provider Tools -->
+                <!-- Today's Appointments -->
+                <div class="mb-4">
+                    <h4 style="color: #7eb89e; margin-bottom: 20px;">Today - {{ today.strftime('%A, %B %d, %Y') }}</h4>
+                    {% if todays_appointments %}
+                    {% for apt in todays_appointments %}
+                    <div class="appointment-card">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                <div class="appointment-time">{{ apt.start_time.strftime('%I:%M %p') }}</div>
+                                <small class="text-muted">{{ apt.duration_minutes }} min</small>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="client-name">{{ apt.client.name }}</div>
+                                <small class="text-muted">
+                                    <i class="fas fa-envelope"></i> {{ apt.client.email }}<br>
+                                    <i class="fas fa-spa"></i> {{ apt.treatment.name if apt.treatment else 'General Session' }}
+                                </small>
+                            </div>
+                            <div class="col-md-3">
+                                {% if apt.client.medical_alerts|length > 0 %}
+                                <span class="medical-alert-badge high">
+                                    <i class="fas fa-exclamation-triangle"></i> {{ apt.client.medical_alerts|length }} Alert(s)
+                                </span>
+                                {% endif %}
+                                {% if apt.client.preferred_pressure %}
+                                <div class="mt-2"><small><i class="fas fa-hand-paper"></i> Prefers {{ apt.client.preferred_pressure }} pressure</small></div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <button class="btn btn-spa btn-sm mb-1">View Client</button>
+                                <button class="btn btn-spa-outline btn-sm">Add SOAP Note</button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-day"></i>
+                        <h4>No Appointments Today</h4>
+                        <p>Relax and recharge!</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Upcoming Appointments -->
+                <div class="mb-4">
+                    <h4 style="color: #7eb89e; margin-bottom: 20px;">Upcoming Appointments</h4>
+                    {% if upcoming_appointments %}
+                    {% for apt in upcoming_appointments %}
+                    <div class="appointment-card">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <div style="font-weight: 600; color: #2C2C2C;">{{ apt.appointment_date.strftime('%A, %b %d') }}</div>
+                                <div class="appointment-time" style="font-size: 1.1rem;">{{ apt.start_time.strftime('%I:%M %p') }}</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="client-name">{{ apt.client.name }}</div>
+                                <small class="text-muted">{{ apt.treatment.name if apt.treatment else 'General Session' }}</small>
+                            </div>
+                            <div class="col-md-2">
+                                {% if apt.client.medical_alerts|length > 0 %}
+                                <span class="medical-alert-badge">Alert</span>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <button class="btn btn-spa btn-sm">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-times"></i>
+                        <h4>No Upcoming Appointments</h4>
+                        <p>Your schedule is clear for the next week.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- SOAP NOTES TAB -->
+            <div class="tab-pane fade" id="soap" role="tabpanel">
+                <h3 class="section-title">SOAP Notes</h3>
+                
                 <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="btn-group mb-3" role="group">
-                            <a href="/provider/availability" class="btn btn-outline-primary">
-                                <i class="fas fa-calendar-alt"></i> Manage Availability
-                            </a>
-                            <a href="/provider/preferences" class="btn btn-outline-primary">
-                                <i class="fas fa-cog"></i> Booking Preferences
-                            </a>
-                        </div>
+                    <div class="col-md-12">
+                        <button class="btn btn-spa" data-bs-toggle="modal" data-bs-target="#newSOAPModal">
+                            <i class="fas fa-plus"></i> Create New SOAP Note
+                        </button>
                     </div>
                 </div>
+
+                <h4 style="color: #7eb89e; margin-bottom: 20px;">Recent SOAP Notes</h4>
+                {% if recent_soap_notes %}
+                {% for note in recent_soap_notes %}
+                <div class="soap-note-card">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5>{{ note.client.name }}</h5>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar"></i> {{ note.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                            </small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-spa-outline btn-sm">View Full Note</button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <strong>Subjective:</strong>
+                            <p>{{ note.subjective[:100] if note.subjective else 'No subjective notes' }}...</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Assessment:</strong>
+                            <p>{{ note.assessment[:100] if note.assessment else 'No assessment' }}...</p>
+                        </div>
+                    </div>
+                    {% if note.pain_level_before or note.pain_level_after %}
+                    <div class="mt-2">
+                        <span class="badge" style="background: #7eb89e;">Pain: {{ note.pain_level_before }}/10 → {{ note.pain_level_after }}/10</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-file-medical"></i>
+                    <h4>No SOAP Notes Yet</h4>
+                    <p>Create your first SOAP note to track treatment progress.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- CLIENTS TAB -->
+            <div class="tab-pane fade" id="clients" role="tabpanel">
+                <h3 class="section-title">Client Management</h3>
                 
-                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control" placeholder="Search clients by name or email..." id="clientSearch">
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-spa">
+                            <i class="fas fa-user-plus"></i> Add New Client
+                        </button>
+                    </div>
+                </div>
+
+                <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <h4>Client Directory Coming Soon</h4>
+                    <p>Search and manage your client profiles here.</p>
+                </div>
+            </div>
+
+            <!-- ANALYTICS TAB -->
+            <div class="tab-pane fade" id="analytics" role="tabpanel">
+                <h3 class="section-title">Performance Analytics</h3>
+                
                 <div class="row mb-4">
                     <div class="col-md-4 mb-3">
-                        <div class="card text-white" style="background: linear-gradient(135deg, #2c7a7b 0%, #1a4d4d 100%);">
-                            <div class="card-body">
-                                <h5 class="card-title">Pending Reviews</h5>
-                                <h2 class="mb-0">{{ intakes|length }}</h2>
-                                <small>Unconfirmed intakes</small>
-                            </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Sessions This Month</div>
+                            <div class="stat-number">{{ total_sessions_month }}</div>
+                            <small class="text-muted">Average {{ "%.1f"|format(total_sessions_month / 30) }} per day</small>
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <div class="card" style="background: #e0f2f1; border: 2px solid #2c7a7b;">
-                            <div class="card-body">
-                                <h5 class="card-title" style="color: #1a4d4d;">Quick Actions</h5>
-                                <a href="/book" class="btn btn-sm" style="background: #2c7a7b; color: white;">View Booking Page</a>
-                            </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Revenue (MTD)</div>
+                            <div class="stat-number">${{ "%.0f"|format(total_revenue_month) }}</div>
+                            <small class="text-muted">Month-to-date earnings</small>
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <div class="card" style="background: #fff3cd; border: 2px solid #ffc107;">
-                            <div class="card-body">
-                                <h5 class="card-title" style="color: #856404;">Welcome Back!</h5>
-                                <p class="mb-0 small">Logged in as provider</p>
-                            </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Avg Per Session</div>
+                            <div class="stat-number">${{ "%.0f"|format(total_revenue_month / total_sessions_month if total_sessions_month > 0 else 0) }}</div>
+                            <small class="text-muted">Average session value</small>
                         </div>
                     </div>
                 </div>
-                
-                <h3 class="mb-3">
-                    <i class="fas fa-clipboard-list"></i> Unconfirmed Client Intakes
-                </h3>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="soap-note-card">
+                            <h5 style="color: #7eb89e;">Sessions by Month</h5>
+                            <canvas id="sessionsChart" style="max-height: 300px;"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="soap-note-card">
+                            <h5 style="color: #7eb89e;">Revenue Trend</h5>
+                            <canvas id="revenueChart" style="max-height: 300px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INTAKES TAB -->
+            <div class="tab-pane fade" id="intakes" role="tabpanel">
+                <h3 class="section-title">Unconfirmed Client Intakes</h3>
                 
                 {% if intakes %}
                 <div class="table-responsive">
-                    <table class="table table-hover" style="border: 1px solid #2c7a7b;">
-                        <thead style="background: linear-gradient(135deg, #2c7a7b 0%, #1a4d4d 100%); color: white;">
+                    <table class="table">
+                        <thead style="background: #7eb89e; color: white;">
                             <tr>
                                 <th>Client Name</th>
                                 <th>Email</th>
                                 <th>Medical History</th>
                                 <th>Pregnancy</th>
-                                <th>Booking ID</th>
                                 <th>Submitted</th>
-                                <th style="width: 150px;">Action</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for intake in intakes %}
-                            <tr style="border-bottom: 1px solid #e0f2f1;">
-                                <td><strong>{{ intake.client_name }}</strong></td>
+                            <tr>
+                                <td><strong>{{ intake.client.name if intake.client else 'Unknown' }}</strong></td>
                                 <td>
-                                    <a href="mailto:{{ intake.email }}" style="color: #2c7a7b;">
-                                        {{ intake.email }}
-                                    </a>
-                                    <br>
-                                    <a href="/provider/client-notes/{{ intake.email }}" class="badge bg-info text-decoration-none">
-                                        <i class="fas fa-sticky-note"></i> Notes
+                                    <a href="mailto:{{ intake.client.email if intake.client else '' }}" style="color: #7eb89e;">
+                                        {{ intake.client.email if intake.client else 'No email' }}
                                     </a>
                                 </td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-secondary" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#medicalModal{{ intake.id }}">
+                                    <button class="btn btn-sm btn-spa-outline" data-bs-toggle="modal" data-bs-target="#medicalModal{{ intake.id }}">
                                         <i class="fas fa-eye"></i> View Details
                                     </button>
                                     
-                                    <!-- Modal for Medical History -->
+                                    <!-- Modal -->
                                     <div class="modal fade" id="medicalModal{{ intake.id }}" tabindex="-1">
                                         <div class="modal-dialog modal-lg">
                                             <div class="modal-content">
-                                                <div class="modal-header" style="background: #2c7a7b; color: white;">
-                                                    <h5 class="modal-title">Medical History - {{ intake.client_name }}</h5>
+                                                <div class="modal-header" style="background: #7eb89e; color: white;">
+                                                    <h5 class="modal-title">Medical History - {{ intake.client.name if intake.client else 'Unknown' }}</h5>
                                                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p><strong>Client:</strong> {{ intake.client_name }}</p>
-                                                    <p><strong>Email:</strong> {{ intake.email }}</p>
+                                                    <p><strong>Client:</strong> {{ intake.client.name if intake.client else 'Unknown' }}</p>
+                                                    <p><strong>Email:</strong> {{ intake.client.email if intake.client else 'No email' }}</p>
                                                     <p><strong>Pregnancy Stage:</strong> {{ intake.pregnancy_stage or 'N/A' }}</p>
                                                     <hr>
                                                     <h6>Medical History:</h6>
-                                                    <div style="background: #f5f5f5; padding: 15px; border-left: 4px solid #2c7a7b;">
+                                                    <div style="background: #f5f5f5; padding: 15px; border-left: 4px solid #7eb89e;">
                                                         {{ intake.medical_history or 'No medical history provided' }}
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                    <a href="/confirm-intake/{{ intake.id }}" class="btn btn-success">
+                                                    <a href="/confirm-intake/{{ intake.id }}" class="btn btn-spa">
                                                         <i class="fas fa-check"></i> Confirm Booking
                                                     </a>
                                                 </div>
@@ -132,14 +682,13 @@
                                 </td>
                                 <td>
                                     {% if intake.pregnancy_stage %}
-                                        <span class="badge" style="background: #ffc107; color: #856404;">
+                                        <span class="medical-alert-badge">
                                             {{ intake.pregnancy_stage }}
                                         </span>
                                     {% else %}
                                         <span class="text-muted">N/A</span>
                                     {% endif %}
                                 </td>
-                                <td>{{ intake.booking_id or '<em class="text-muted">Pending</em>' | safe }}</td>
                                 <td>
                                     <small>
                                         {{ intake.created_at.strftime('%m/%d/%Y') if intake.created_at else 'N/A' }}<br>
@@ -148,8 +697,8 @@
                                 </td>
                                 <td>
                                     <a href="/confirm-intake/{{ intake.id }}" 
-                                       class="btn btn-sm btn-success w-100"
-                                       onclick="return confirm('Confirm booking for {{ intake.client_name }}? This will send a confirmation email to the client.');">
+                                       class="btn btn-spa btn-sm"
+                                       onclick="return confirm('Confirm booking for {{ intake.client.name if intake.client else 'this client' }}? This will send a confirmation email.');">
                                         <i class="fas fa-check"></i> Confirm
                                     </a>
                                 </td>
@@ -159,10 +708,10 @@
                     </table>
                 </div>
                 {% else %}
-                <div class="alert alert-success text-center" style="border: 2px solid #2c7a7b;">
-                    <i class="fas fa-check-circle fa-3x mb-3" style="color: #2c7a7b;"></i>
+                <div class="empty-state">
+                    <i class="fas fa-check-circle"></i>
                     <h4>All Caught Up!</h4>
-                    <p class="mb-0">No unconfirmed intakes at this time. All bookings are up to date!</p>
+                    <p>No unconfirmed intakes at this time. All bookings are up to date!</p>
                 </div>
                 {% endif %}
             </div>
@@ -170,6 +719,49 @@
     </div>
 </section>
 
-<!-- Add Font Awesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!-- Chart.js for Analytics -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+<script>
+// Sample charts - you can populate with real data
+const sessionsCtx = document.getElementById('sessionsChart');
+if (sessionsCtx) {
+    new Chart(sessionsCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Sessions',
+                data: [12, 19, 15, 25, 22, {{ total_sessions_month }}],
+                borderColor: '#7eb89e',
+                backgroundColor: 'rgba(126, 184, 158, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
+const revenueCtx = document.getElementById('revenueChart');
+if (revenueCtx) {
+    new Chart(revenueCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Revenue ($)',
+                data: [1200, 1900, 1500, 2500, 2200, {{ total_revenue_month }}],
+                backgroundColor: '#7eb89e',
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+</script>
 {% endblock %}

@@ -4,7 +4,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from models import db, Client, Intake, Provider, Application, Location, Treatment, ProviderTreatment, ProviderAvailability, ProviderDailyLimit, ClientNote, Appointment, SOAPNote, MedicalAlert, PerformanceMetric
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -41,6 +41,31 @@ def load_user(user_id):
     if provider:
         return User(provider.id, provider.username)
     return None
+
+def get_or_create_client(name, email, phone=None):
+    """
+    Get existing client by email or create a new one.
+    Returns the Client object.
+    """
+    client = Client.query.filter_by(email=email).first()
+    if client:
+        # Update client info if provided
+        if name and client.name != name:
+            client.name = name
+        if phone and client.phone != phone:
+            client.phone = phone
+        db.session.commit()
+        return client
+    
+    # Create new client
+    client = Client(
+        name=name,
+        email=email,
+        phone=phone
+    )
+    db.session.add(client)
+    db.session.commit()
+    return client
 
 def send_email(to_email, subject, body):
     """Send HTML email with professional formatting and error handling"""
@@ -104,18 +129,20 @@ def send_email(to_email, subject, body):
 def send_booking_notification(intake):
     """Notify providers of new booking"""
     provider_emails = [p.username for p in Provider.query.all()]
-    subject = f"New Booking: {intake.client_name}"
+    client_name = intake.client.name if intake.client else 'Unknown'
+    client_email = intake.client.email if intake.client else 'N/A'
+    subject = f"New Booking: {client_name}"
     body = f"""
     <h2 style="color: #2c7a7b;">New Client Booking Received</h2>
     <p>A new client has submitted their intake form and needs confirmation.</p>
     <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
         <tr style="background: #e0f2f1;">
             <td style="padding: 10px; font-weight: bold; border: 1px solid #2c7a7b;">Client Name</td>
-            <td style="padding: 10px; border: 1px solid #2c7a7b;">{intake.client_name}</td>
+            <td style="padding: 10px; border: 1px solid #2c7a7b;">{client_name}</td>
         </tr>
         <tr>
             <td style="padding: 10px; font-weight: bold; border: 1px solid #2c7a7b;">Email</td>
-            <td style="padding: 10px; border: 1px solid #2c7a7b;">{intake.email}</td>
+            <td style="padding: 10px; border: 1px solid #2c7a7b;">{client_email}</td>
         </tr>
         <tr style="background: #e0f2f1;">
             <td style="padding: 10px; font-weight: bold; border: 1px solid #2c7a7b;">Booking ID</td>
@@ -142,10 +169,14 @@ def send_booking_notification(intake):
 
 def send_confirmation_email(intake):
     """Send confirmation to client"""
+    if not intake.client:
+        print("⚠ Warning: Cannot send confirmation email - no client associated with intake")
+        return
+    
     subject = "Your Massage Appointment is Confirmed!"
     body = f"""
     <h2 style="color: #2c7a7b;">Booking Confirmed</h2>
-    <p>Dear {intake.client_name},</p>
+    <p>Dear {intake.client.name},</p>
     <p>Great news! Your massage appointment has been confirmed by our team.</p>
     <div style="background: #e0f2f1; padding: 20px; border-radius: 8px; margin: 20px 0;">
         <p style="margin: 5px 0;"><strong>Booking ID:</strong> {intake.booking_id or 'TBD'}</p>
@@ -163,7 +194,7 @@ def send_confirmation_email(intake):
     <p style="margin-top: 30px;">We look forward to seeing you soon!</p>
     <p><em>The Tough Love Massage Team</em></p>
     """
-    send_email(intake.email, subject, body)
+    send_email(intake.client.email, subject, body)
 
 def send_gift_card_email(recipient_email, amount, message, sender_name="A Friend"):
     """Send gift card to recipient"""
@@ -790,8 +821,62 @@ def book():
 @login_required
 def provider_portal():
     provider = Provider.query.get(current_user.id)
+    today = date.today()
+    tomorrow = today + timedelta(days=1)
+    
+    # Get today's and upcoming appointments
+    todays_appointments = Appointment.query.filter(
+        Appointment.provider_id == current_user.id,
+        Appointment.appointment_date == today,
+        Appointment.status.in_(['scheduled', 'confirmed'])
+    ).order_by(Appointment.start_time).all()
+    
+    upcoming_appointments = Appointment.query.filter(
+        Appointment.provider_id == current_user.id,
+        Appointment.appointment_date >= tomorrow,
+        Appointment.status.in_(['scheduled', 'confirmed'])
+    ).order_by(Appointment.appointment_date, Appointment.start_time).limit(10).all()
+    
+    # Get unconfirmed intakes
     unconfirmed_intakes = Intake.query.filter_by(confirmed=False).all()
-    return render_template('provider_portal.html', intakes=unconfirmed_intakes, provider=provider)
+    
+    # Get recent SOAP notes
+    recent_soap_notes = SOAPNote.query.filter_by(provider_id=current_user.id).order_by(SOAPNote.created_at.desc()).limit(5).all()
+    
+    # Get clients with active medical alerts
+    active_alerts = MedicalAlert.query.filter_by(is_active=True).join(Client).all()
+    
+    # Get stats
+    total_clients = Client.query.join(Appointment).filter(Appointment.provider_id == current_user.id).distinct().count()
+    total_appointments = Appointment.query.filter_by(provider_id=current_user.id).count()
+    completed_this_month = Appointment.query.filter(
+        Appointment.provider_id == current_user.id,
+        Appointment.status == 'completed',
+        Appointment.appointment_date >= date(today.year, today.month, 1)
+    ).count()
+    
+    # Get performance metrics for this month
+    month_metrics = PerformanceMetric.query.filter(
+        PerformanceMetric.provider_id == current_user.id,
+        PerformanceMetric.metric_date >= date(today.year, today.month, 1)
+    ).all()
+    
+    total_revenue_month = sum(m.total_revenue for m in month_metrics)
+    total_sessions_month = sum(m.sessions_completed for m in month_metrics)
+    
+    return render_template('provider_portal.html', 
+                         provider=provider,
+                         todays_appointments=todays_appointments,
+                         upcoming_appointments=upcoming_appointments,
+                         intakes=unconfirmed_intakes,
+                         recent_soap_notes=recent_soap_notes,
+                         active_alerts=active_alerts,
+                         total_clients=total_clients,
+                         total_appointments=total_appointments,
+                         completed_this_month=completed_this_month,
+                         total_revenue_month=total_revenue_month,
+                         total_sessions_month=total_sessions_month,
+                         today=today)
 
 @app.route('/confirm-intake/<int:intake_id>')
 @login_required
@@ -802,7 +887,8 @@ def confirm_intake(intake_id):
     
     send_confirmation_email(intake)
     
-    flash(f'✓ Intake confirmed for {intake.client_name} and notification email sent!', 'success')
+    client_name = intake.client.name if intake.client else 'Unknown Client'
+    flash(f'✓ Intake confirmed for {client_name} and notification email sent!', 'success')
     return redirect(url_for('provider_portal'))
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -835,9 +921,17 @@ def fullslate_webhook():
     """Handle incoming bookings from FullSlate"""
     try:
         data = request.json
-        intake = Intake(
-            client_name=data.get('client_name'),
+        
+        # Get or create client
+        client = get_or_create_client(
+            name=data.get('client_name'),
             email=data.get('email'),
+            phone=data.get('phone')
+        )
+        
+        # Create intake associated with client
+        intake = Intake(
+            client_id=client.id,
             medical_history=data.get('medical_history', ''),
             pregnancy_stage=data.get('pregnancy_stage'),
             booking_id=data.get('booking_id'),
@@ -852,7 +946,7 @@ def fullslate_webhook():
         # Send acknowledgment to client
         client_body = f"""
         <h2 style="color: #2c7a7b;">Booking Received!</h2>
-        <p>Dear {intake.client_name},</p>
+        <p>Dear {client.name},</p>
         <p>Thank you for choosing Tough Love Massage. We've received your booking request and intake form.</p>
         <div style="background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0;">
             <p style="margin: 0;"><strong>⏳ Pending Confirmation</strong></p>
@@ -862,7 +956,7 @@ def fullslate_webhook():
         <p>If you have any questions, please don't hesitate to contact us.</p>
         <p><em>The Tough Love Massage Team</em></p>
         """
-        send_email(intake.email, 'Booking Request Received - Tough Love Massage', client_body)
+        send_email(client.email, 'Booking Request Received - Tough Love Massage', client_body)
         
         return jsonify({'status': 'success', 'intake_id': intake.id}), 200
     except Exception as e:

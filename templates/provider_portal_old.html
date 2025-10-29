@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Provider Portal - Tough Love Massage{% endblock %}
+
+{% block content %}
+<section class="py-5" style="margin-top: 80px;">
+    <div class="container" data-aos="fade-up">
+        <div class="row">
+            <div class="col-lg-11 mx-auto">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1>Provider Portal</h1>
+                    <div>
+                        {% if provider and provider.is_admin %}
+                        <a href="/admin-dashboard" class="btn btn-primary me-2">
+                            <i class="fas fa-shield-alt"></i> Admin Dashboard
+                        </a>
+                        {% endif %}
+                        <a href="/logout" class="btn btn-secondary">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Provider Tools -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="btn-group mb-3" role="group">
+                            <a href="/provider/availability" class="btn btn-outline-primary">
+                                <i class="fas fa-calendar-alt"></i> Manage Availability
+                            </a>
+                            <a href="/provider/preferences" class="btn btn-outline-primary">
+                                <i class="fas fa-cog"></i> Booking Preferences
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="card text-white" style="background: linear-gradient(135deg, #2c7a7b 0%, #1a4d4d 100%);">
+                            <div class="card-body">
+                                <h5 class="card-title">Pending Reviews</h5>
+                                <h2 class="mb-0">{{ intakes|length }}</h2>
+                                <small>Unconfirmed intakes</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card" style="background: #e0f2f1; border: 2px solid #2c7a7b;">
+                            <div class="card-body">
+                                <h5 class="card-title" style="color: #1a4d4d;">Quick Actions</h5>
+                                <a href="/book" class="btn btn-sm" style="background: #2c7a7b; color: white;">View Booking Page</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card" style="background: #fff3cd; border: 2px solid #ffc107;">
+                            <div class="card-body">
+                                <h5 class="card-title" style="color: #856404;">Welcome Back!</h5>
+                                <p class="mb-0 small">Logged in as provider</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="mb-3">
+                    <i class="fas fa-clipboard-list"></i> Unconfirmed Client Intakes
+                </h3>
+                
+                {% if intakes %}
+                <div class="table-responsive">
+                    <table class="table table-hover" style="border: 1px solid #2c7a7b;">
+                        <thead style="background: linear-gradient(135deg, #2c7a7b 0%, #1a4d4d 100%); color: white;">
+                            <tr>
+                                <th>Client Name</th>
+                                <th>Email</th>
+                                <th>Medical History</th>
+                                <th>Pregnancy</th>
+                                <th>Booking ID</th>
+                                <th>Submitted</th>
+                                <th style="width: 150px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for intake in intakes %}
+                            <tr style="border-bottom: 1px solid #e0f2f1;">
+                                <td><strong>{{ intake.client_name }}</strong></td>
+                                <td>
+                                    <a href="mailto:{{ intake.email }}" style="color: #2c7a7b;">
+                                        {{ intake.email }}
+                                    </a>
+                                    <br>
+                                    <a href="/provider/client-notes/{{ intake.email }}" class="badge bg-info text-decoration-none">
+                                        <i class="fas fa-sticky-note"></i> Notes
+                                    </a>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-secondary" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#medicalModal{{ intake.id }}">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </button>
+                                    
+                                    <!-- Modal for Medical History -->
+                                    <div class="modal fade" id="medicalModal{{ intake.id }}" tabindex="-1">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header" style="background: #2c7a7b; color: white;">
+                                                    <h5 class="modal-title">Medical History - {{ intake.client_name }}</h5>
+                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p><strong>Client:</strong> {{ intake.client_name }}</p>
+                                                    <p><strong>Email:</strong> {{ intake.email }}</p>
+                                                    <p><strong>Pregnancy Stage:</strong> {{ intake.pregnancy_stage or 'N/A' }}</p>
+                                                    <hr>
+                                                    <h6>Medical History:</h6>
+                                                    <div style="background: #f5f5f5; padding: 15px; border-left: 4px solid #2c7a7b;">
+                                                        {{ intake.medical_history or 'No medical history provided' }}
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <a href="/confirm-intake/{{ intake.id }}" class="btn btn-success">
+                                                        <i class="fas fa-check"></i> Confirm Booking
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if intake.pregnancy_stage %}
+                                        <span class="badge" style="background: #ffc107; color: #856404;">
+                                            {{ intake.pregnancy_stage }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ intake.booking_id or '<em class="text-muted">Pending</em>' | safe }}</td>
+                                <td>
+                                    <small>
+                                        {{ intake.created_at.strftime('%m/%d/%Y') if intake.created_at else 'N/A' }}<br>
+                                        <span class="text-muted">{{ intake.created_at.strftime('%I:%M %p') if intake.created_at else '' }}</span>
+                                    </small>
+                                </td>
+                                <td>
+                                    <a href="/confirm-intake/{{ intake.id }}" 
+                                       class="btn btn-sm btn-success w-100"
+                                       onclick="return confirm('Confirm booking for {{ intake.client_name }}? This will send a confirmation email to the client.');">
+                                        <i class="fas fa-check"></i> Confirm
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-success text-center" style="border: 2px solid #2c7a7b;">
+                    <i class="fas fa-check-circle fa-3x mb-3" style="color: #2c7a7b;"></i>
+                    <h4>All Caught Up!</h4>
+                    <p class="mb-0">No unconfirmed intakes at this time. All bookings are up to date!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
