@@ -142,21 +142,22 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hero-main-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 4.5rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3rem;
     font-weight: 400;
-    letter-spacing: 2px;
-    color: #FFFFFF;
+    letter-spacing: 8px;
+    color: #7eb89e;
     margin-bottom: 2rem;
-    text-shadow: 3px 3px 20px rgba(0,0,0,0.8);
+    text-shadow: 2px 2px 15px rgba(0,0,0,0.8);
     line-height: 1.2;
 }
 
 .hero-subtitle {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1.2rem;
-    font-weight: 300;
-    letter-spacing: 0.5px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5rem;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 2px;
     color: #FFFFFF;
     margin-bottom: 1.5rem;
     line-height: 1.8;
@@ -165,6 +166,17 @@ h1, h2, h3, h4, h5, h6 {
 .hero-subtitle p {
     margin: 0.3rem 0;
     text-shadow: 2px 2px 15px rgba(0,0,0,0.8);
+}
+
+.subtitle-script {
+    text-shadow: 2px 2px 15px rgba(0,0,0,0.8);
+}
+
+.subtitle-divider {
+    margin: 0 1.5rem;
+    color: #7eb89e;
+    font-style: normal;
+    font-size: 1.5rem;
 }
 
 .hero-testimonial {
