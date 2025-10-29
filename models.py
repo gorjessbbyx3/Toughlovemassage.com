@@ -84,7 +84,7 @@ class Provider(db.Model):
     availabilities = db.relationship('ProviderAvailability', back_populates='provider', cascade='all, delete-orphan')
     daily_limits = db.relationship('ProviderDailyLimit', back_populates='provider', cascade='all, delete-orphan')
     intakes = db.relationship('Intake', back_populates='assigned_provider')
-    client_notes = db.relationship('ClientNote', back_populates='provider', cascade='all, delete-orphan')
+    client_notes = db.relationship('ClientNote', foreign_keys='ClientNote.provider_id', back_populates='provider', cascade='all, delete-orphan')
     
     def __repr__(self):
         return f'<Provider {self.username}>'
