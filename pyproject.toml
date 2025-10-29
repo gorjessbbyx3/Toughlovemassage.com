@@ -4,9 +4,11 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.11"
 dependencies = [
+    "email-validator>=2.3.0",
     "flask>=3.1.2",
     "flask-login>=0.6.3",
     "flask-sqlalchemy>=3.1.1",
+    "gunicorn>=23.0.0",
     "psycopg2-binary>=2.9.11",
     "sqlalchemy>=2.0.44",
     "stripe>=13.0.1",
