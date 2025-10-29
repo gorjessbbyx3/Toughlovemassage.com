@@ -583,6 +583,50 @@ footer p a:hover {
     transform: scale(1.2);
 }
 
+/* Location Info Cards */
+.location-info-card {
+    background: rgba(126, 184, 158, 0.08);
+    border: 1px solid rgba(126, 184, 158, 0.2);
+    border-radius: 15px;
+    padding: 2rem;
+    height: 100%;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.location-info-card:hover {
+    background: rgba(126, 184, 158, 0.12);
+    border-color: rgba(126, 184, 158, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.map-link {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, #7eb89e, #5fa87f);
+    color: white !important;
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 4px 15px rgba(126, 184, 158, 0.3);
+    margin-top: 1rem;
+}
+
+.map-link:hover {
+    background: linear-gradient(135deg, #5fa87f, #4a7d68);
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(126, 184, 158, 0.4);
+}
+
+.map-link i {
+    font-size: 1.1rem;
+}
+
 /* Copyright Section */
 footer .text-center {
     margin-top: 3rem;
