@@ -9,12 +9,45 @@ class Base(DeclarativeBase):
 
 db = SQLAlchemy(model_class=Base)
 
+class Client(db.Model):
+    __tablename__ = 'clients'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    email = db.Column(db.String(200), unique=True, nullable=False, index=True)
+    phone = db.Column(db.String(20))
+    date_of_birth = db.Column(db.Date)
+    
+    preferred_pressure = db.Column(db.String(50))
+    focus_areas = db.Column(db.Text)
+    allergies = db.Column(db.Text)
+    music_preference = db.Column(db.String(100))
+    temperature_preference = db.Column(db.String(50))
+    aromatherapy_preference = db.Column(db.String(100))
+    
+    first_visit = db.Column(db.Date)
+    last_visit = db.Column(db.Date)
+    visit_count = db.Column(db.Integer, default=0)
+    lifetime_value = db.Column(db.Float, default=0.0)
+    
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    intakes = db.relationship('Intake', back_populates='client', cascade='all, delete-orphan')
+    appointments = db.relationship('Appointment', back_populates='client', cascade='all, delete-orphan')
+    soap_notes = db.relationship('SOAPNote', back_populates='client', cascade='all, delete-orphan')
+    medical_alerts = db.relationship('MedicalAlert', back_populates='client', cascade='all, delete-orphan')
+    notes = db.relationship('ClientNote', back_populates='client', cascade='all, delete-orphan')
+    
+    def __repr__(self):
+        return f'<Client {self.name}>'
+
 class Intake(db.Model):
     __tablename__ = 'intakes'
     
     id = db.Column(db.Integer, primary_key=True)
-    client_name = db.Column(db.String(200), nullable=False)
-    email = db.Column(db.String(200), nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
     medical_history = db.Column(db.Text)
     pregnancy_stage = db.Column(db.String(100))
     booking_id = db.Column(db.String(100))
@@ -23,10 +56,11 @@ class Intake(db.Model):
     provider_notes = db.Column(db.Text)
     assigned_provider_id = db.Column(db.Integer, db.ForeignKey('providers.id'))
     
+    client = db.relationship('Client', back_populates='intakes')
     assigned_provider = db.relationship('Provider', back_populates='intakes')
     
     def __repr__(self):
-        return f'<Intake {self.client_name}>'
+        return f'<Intake for Client {self.client_id}>'
 
 class Provider(db.Model):
     __tablename__ = 'providers'
@@ -132,15 +166,20 @@ class ClientNote(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     provider_id = db.Column(db.Integer, db.ForeignKey('providers.id'), nullable=False)
-    client_email = db.Column(db.String(200), nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
     notes = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by_provider_id = db.Column(db.Integer, db.ForeignKey('providers.id'))
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_by_provider_id = db.Column(db.Integer, db.ForeignKey('providers.id'))
     
-    provider = db.relationship('Provider', back_populates='client_notes')
+    provider = db.relationship('Provider', foreign_keys=[provider_id], back_populates='client_notes')
+    client = db.relationship('Client', back_populates='notes')
+    created_by = db.relationship('Provider', foreign_keys=[created_by_provider_id])
+    updated_by = db.relationship('Provider', foreign_keys=[updated_by_provider_id])
     
     def __repr__(self):
-        return f'<ClientNote {self.client_email}>'
+        return f'<ClientNote for Client {self.client_id}>'
 
 class Application(db.Model):
     __tablename__ = 'applications'
@@ -154,3 +193,126 @@ class Application(db.Model):
     
     def __repr__(self):
         return f'<Application {self.name}>'
+
+class Appointment(db.Model):
+    __tablename__ = 'appointments'
+    __table_args__ = (
+        db.UniqueConstraint('provider_id', 'appointment_date', 'start_time', name='_provider_datetime_uc'),
+        db.Index('idx_appointment_date_status', 'appointment_date', 'status'),
+        db.Index('idx_appointment_provider_date', 'provider_id', 'appointment_date'),
+    )
+    
+    id = db.Column(db.Integer, primary_key=True)
+    provider_id = db.Column(db.Integer, db.ForeignKey('providers.id'), nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+    treatment_id = db.Column(db.Integer, db.ForeignKey('treatments.id'))
+    appointment_date = db.Column(db.Date, nullable=False)
+    start_time = db.Column(db.Time, nullable=False)
+    end_time = db.Column(db.Time, nullable=False)
+    duration_minutes = db.Column(db.Integer, default=60)
+    status = db.Column(db.String(50), default='scheduled')
+    notes = db.Column(db.Text)
+    fullslate_booking_id = db.Column(db.String(100), unique=True)
+    confirmed = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by_provider_id = db.Column(db.Integer, db.ForeignKey('providers.id'))
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_by_provider_id = db.Column(db.Integer, db.ForeignKey('providers.id'))
+    
+    provider = db.relationship('Provider', foreign_keys=[provider_id], backref='appointments')
+    client = db.relationship('Client', back_populates='appointments')
+    treatment = db.relationship('Treatment')
+    soap_note = db.relationship('SOAPNote', back_populates='appointment', uselist=False, cascade='all, delete-orphan')
+    created_by = db.relationship('Provider', foreign_keys=[created_by_provider_id])
+    updated_by = db.relationship('Provider', foreign_keys=[updated_by_provider_id])
+    
+    def __repr__(self):
+        return f'<Appointment for Client {self.client_id} on {self.appointment_date}>'
+
+class SOAPNote(db.Model):
+    __tablename__ = 'soap_notes'
+    __table_args__ = (
+        db.UniqueConstraint('appointment_id', name='_one_soap_per_appointment'),
+    )
+    
+    id = db.Column(db.Integer, primary_key=True)
+    appointment_id = db.Column(db.Integer, db.ForeignKey('appointments.id'), nullable=False, unique=True)
+    provider_id = db.Column(db.Integer, db.ForeignKey('providers.id'), nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+    
+    subjective = db.Column(db.Text)
+    objective = db.Column(db.Text)
+    assessment = db.Column(db.Text)
+    plan = db.Column(db.Text)
+    
+    pain_level_before = db.Column(db.Integer)
+    pain_level_after = db.Column(db.Integer)
+    areas_worked = db.Column(db.Text)
+    techniques_used = db.Column(db.Text)
+    pressure_preference = db.Column(db.String(50))
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by_provider_id = db.Column(db.Integer, db.ForeignKey('providers.id'))
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_by_provider_id = db.Column(db.Integer, db.ForeignKey('providers.id'))
+    is_locked = db.Column(db.Boolean, default=False)
+    
+    appointment = db.relationship('Appointment', back_populates='soap_note')
+    provider = db.relationship('Provider', foreign_keys=[provider_id], backref='soap_notes')
+    client = db.relationship('Client', back_populates='soap_notes')
+    created_by = db.relationship('Provider', foreign_keys=[created_by_provider_id])
+    updated_by = db.relationship('Provider', foreign_keys=[updated_by_provider_id])
+    
+    def __repr__(self):
+        return f'<SOAPNote for Client {self.client_id}>'
+
+class MedicalAlert(db.Model):
+    __tablename__ = 'medical_alerts'
+    __table_args__ = (
+        db.Index('idx_alert_client_active', 'client_id', 'is_active'),
+    )
+    
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+    alert_type = db.Column(db.String(50), nullable=False)
+    severity = db.Column(db.String(20), default='medium')
+    description = db.Column(db.Text, nullable=False)
+    contraindications = db.Column(db.Text)
+    special_instructions = db.Column(db.Text)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by_provider_id = db.Column(db.Integer, db.ForeignKey('providers.id'))
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_by_provider_id = db.Column(db.Integer, db.ForeignKey('providers.id'))
+    
+    client = db.relationship('Client', back_populates='medical_alerts')
+    created_by = db.relationship('Provider', foreign_keys=[created_by_provider_id], backref='created_alerts')
+    updated_by = db.relationship('Provider', foreign_keys=[updated_by_provider_id])
+    
+    def __repr__(self):
+        return f'<MedicalAlert {self.alert_type} for Client {self.client_id}>'
+
+class PerformanceMetric(db.Model):
+    __tablename__ = 'performance_metrics'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    provider_id = db.Column(db.Integer, db.ForeignKey('providers.id'), nullable=False)
+    metric_date = db.Column(db.Date, nullable=False)
+    
+    sessions_completed = db.Column(db.Integer, default=0)
+    sessions_cancelled = db.Column(db.Integer, default=0)
+    total_revenue = db.Column(db.Float, default=0.0)
+    
+    new_clients = db.Column(db.Integer, default=0)
+    returning_clients = db.Column(db.Integer, default=0)
+    
+    average_rating = db.Column(db.Float)
+    total_hours_worked = db.Column(db.Float, default=0.0)
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    provider = db.relationship('Provider', backref='metrics')
+    
+    def __repr__(self):
+        return f'<Metrics P{self.provider_id} on {self.metric_date}>'
+

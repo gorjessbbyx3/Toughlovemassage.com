@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from models import db, Intake, Provider, Application, Location, Treatment, ProviderTreatment, ProviderAvailability, ProviderDailyLimit, ClientNote
+from models import db, Client, Intake, Provider, Application, Location, Treatment, ProviderTreatment, ProviderAvailability, ProviderDailyLimit, ClientNote, Appointment, SOAPNote, MedicalAlert, PerformanceMetric
 from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
