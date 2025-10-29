@@ -55,11 +55,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hero-split-left {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1200&q=80');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/static/worcester-room.png');
 }
 
 .hero-split-right {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=1200&q=80');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/static/holliston-room.png');
 }
 
 .hero-split:hover {
