@@ -15,9 +15,20 @@ A professional, Forbes 5-star level luxury massage spa website built with Flask,
 ├── models.py               # Database models (Intake, Provider, Application)
 ├── templates/              # HTML templates
 │   ├── base.html          # Base template with nav/footer
-│   ├── home.html          # Landing page
-│   ├── location_downtown.html
-│   ├── location_suburban.html
+│   ├── home.html          # Minimalist split-screen landing page
+│   ├── locations/         # Location-specific page structure
+│   │   ├── holliston/     # Holliston location pages
+│   │   │   ├── landing.html    # Holliston homepage with storefront hero
+│   │   │   ├── services.html   # Services menu with real pricing
+│   │   │   ├── booking.html    # FullSlate booking integration
+│   │   │   ├── team.html       # Meet the therapists
+│   │   │   └── info.html       # Contact, hours, policies, map
+│   │   └── worcester/     # Worcester location pages
+│   │       ├── landing.html    # Worcester homepage with reception hero
+│   │       ├── services.html   # Services menu with real pricing
+│   │       ├── booking.html    # FullSlate booking integration
+│   │       ├── team.html       # Meet the therapists
+│   │       └── info.html       # Contact, hours, policies, map
 │   ├── gift_cards.html
 │   ├── join_team.html
 │   ├── policies.html
@@ -25,8 +36,11 @@ A professional, Forbes 5-star level luxury massage spa website built with Flask,
 │   ├── login.html
 │   └── book.html
 ├── static/
-│   ├── css/style.css      # Luxury styling (Playfair Display, Montserrat, soft blues/greens)
+│   ├── css/style.css      # Luxury spa styling (Cormorant Garamond, Montserrat, #7eb89e green)
 │   ├── js/main.js         # Client-side interactions
+│   ├── holliston-storefront.png  # Holliston exterior hero image
+│   ├── holliston-room.png        # Holliston treatment room
+│   ├── worcester-room.png        # Worcester reception area
 │   └── uploads/           # File upload storage
 └── replit.md              # This file
 ```
@@ -34,12 +48,22 @@ A professional, Forbes 5-star level luxury massage spa website built with Flask,
 ## Features Implemented
 
 ### Public Pages
-- **Landing Page**: Hero section with luxury spa exterior, clickable location images, Andrea L. testimonial
-- **Location Pages**: Downtown Studio & Suburban Retreat with treatment menus ($120-$130), provider profiles, hours, Google Maps, FullSlate booking placeholders
+- **Landing Page**: Minimalist split-screen design with Worcester (left) and Holliston (right) location photos, animated sideways arrows, brand green (#7eb89e) heading
+- **Holliston Location Pages**: 
+  - Landing: Storefront hero image, welcome section, quick info cards
+  - Services: New client special ($90), therapeutic massage pricing, service descriptions
+  - Booking: Embedded FullSlate iframe (toughlovemassage.fullslate.com)
+  - Team: Therapist profiles and specializations
+  - Info: Address (21A Charles St), hours (Mon-Fri 8AM-8PM, Sat-Sun 8AM-5PM), phone (774-233-0365), Google Maps, policies
+- **Worcester Location Pages**:
+  - Landing: Reception room hero image, welcome section, quick info cards
+  - Services: New client specials ($80/$110), comprehensive service menu (30/60/90 min), prenatal, Thai massage, cupping
+  - Booking: Embedded FullSlate iframe (toughlovemassage22.fullslate.com)
+  - Team: Therapist profiles and diverse specializations
+  - Info: Address (130 Millbury St), hours (Mon-Fri 8AM-8PM, Sat 8AM-7PM, Sun 8AM-3PM), phone (508-373-2830), Google Maps, policies
 - **Gift Cards**: Purchase $50/$100/$200 gift cards with Stripe integration
 - **Join Our Team**: Application form with resume upload, stores in database
 - **Policies**: GDPR/HIPAA-compliant privacy policy, cancellation policy (24-hour notice), accordion UI
-- **Book Now**: Dedicated booking page with FullSlate integration instructions
 
 ### Provider Portal (Secure)
 - **Login System**: Flask-Login authentication with hashed passwords
@@ -99,11 +123,12 @@ ADMIN_EMAIL=admin@toughlovemassage.com
 - id, name, email, experience, resume_url, submitted_at
 
 ## Design Specifications
-- **Typography**: Playfair Display (headings), Montserrat (body)
-- **Colors**: Soft blues/greens (#2c7a7b primary, #1a4d4d dark, #e0f2f1 light)
-- **Animations**: AOS library (fade-in, zoom-in, fade-up) with 1s duration
+- **Typography**: Cormorant Garamond (headings), Montserrat (body) - luxury spa aesthetic
+- **Colors**: Brand green (#7eb89e primary), soft neutrals (#2C2C2C dark, #f9f7f4 light backgrounds)
+- **Spa Styling**: Premium spacing, elegant cards with subtle shadows, hover effects, sticky navigation
+- **Animations**: Split-screen hover expansion, animated arrows (slideLeft/slideRight)
 - **Layout**: Bootstrap 5 responsive grid, mobile-first design
-- **Images**: High-resolution stock photos optimized for web
+- **Images**: Real business photos (Holliston storefront, Worcester reception, Holliston treatment room)
 
 ## Next Steps for Customization
 1. **Set ADMIN_EMAIL and ADMIN_PASSWORD** to create your first provider account
@@ -125,7 +150,22 @@ ADMIN_EMAIL=admin@toughlovemassage.com
 - ✅ Login required for provider portal access
 - ⚠️ Using Flask development server - deploy with production WSGI server (Gunicorn) for live use
 
-## Recent Changes (2025-10-27)
+## Recent Changes
+
+### 2025-10-29 - Luxury Spa Location Pages
+- **Complete redesign** of location pages with Forbes 5-star spa aesthetic
+- Created **10 new pages** (5 per location: Landing, Services, Booking, Team, Info)
+- Integrated **real business data**: accurate addresses, hours, phone numbers, pricing from official sources
+- Added **luxury spa CSS** with Cormorant Garamond typography, brand green (#7eb89e), premium spacing
+- Embedded **FullSlate booking** with separate iframes for each location
+- Updated home page navigation to use new location routes
+- Added Holliston storefront hero image
+- Service cards with hover effects, special offer highlighting
+- Location-specific sticky navigation between subpages
+- Google Maps integration for both locations
+- Comprehensive service menus with real pricing
+
+### 2025-10-27 - Security Hardening
 - Removed hard-coded default provider credentials for HIPAA compliance
 - Provider accounts now created via ADMIN_EMAIL/ADMIN_PASSWORD environment variables
 - Updated login page to remove default credential display
