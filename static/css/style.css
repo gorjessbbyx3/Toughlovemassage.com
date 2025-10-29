@@ -410,8 +410,8 @@ footer a:hover {
 
 /* Quick Links Section Styling */
 .footer-quicklinks {
-    background: rgba(126, 184, 158, 0.05);
-    border: 1px solid rgba(126, 184, 158, 0.2);
+    background: transparent;
+    border: none;
     border-radius: 15px;
     padding: 1.5rem;
     margin-bottom: 2rem;
