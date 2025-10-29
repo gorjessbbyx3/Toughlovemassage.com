@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Services & Pricing - Worcester - Tough Love Massage{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="spa-hero" style="background-image: url('{{ url_for('static', filename='worcester-room.png') }}');">
+    <div class="spa-hero-content">
+        <h1>Services & Pricing</h1>
+        <div class="subtitle">Worcester Location</div>
+    </div>
+</div>
+
+<!-- Location Navigation -->
+<nav class="location-nav">
+    <div class="container">
+        <a href="{{ url_for('location_worcester') }}">Home</a>
+        <a href="{{ url_for('worcester_services') }}" class="active">Services & Pricing</a>
+        <a href="{{ url_for('worcester_booking') }}">Book Now</a>
+        <a href="{{ url_for('worcester_team') }}">Meet Our Team</a>
+        <a href="{{ url_for('worcester_info') }}">Location Info</a>
+    </div>
+</nav>
+
+<!-- New Client Special -->
+<section class="spa-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="special-card">
+                    <h3>New Client Specials</h3>
+                    <div class="price">$80 • $110</div>
+                    <div class="description">
+                        First-time clients: 60-minute therapeutic massage for $80 or 90-minute session for $110. Experience our comprehensive approach to therapeutic wellness and pain management.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Menu -->
+<section class="spa-section alt-bg">
+    <div class="container">
+        <h2 class="spa-section-title">Our Services</h2>
+        <p class="spa-section-subtitle">Comprehensive Therapeutic Treatments</p>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="service-card">
+                    <h3>Therapeutic Massage</h3>
+                    <div class="duration">30 / 60 / 90 Minutes</div>
+                    <div class="price">$75 / $110 / $140</div>
+                    <div class="description">
+                        Our signature therapeutic massage combining deep tissue techniques with customized pressure to address your specific needs. Perfect for chronic pain, stress relief, and overall wellness.
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <h3>Deep Tissue Massage</h3>
+                    <div class="duration">60 / 90 Minutes</div>
+                    <div class="price">$110 / $140</div>
+                    <div class="description">
+                        Slow, firm pressure targeting deep muscle layers and connective tissue. Ideal for chronic aches, stiff neck, upper and lower back pain, leg muscle tightness, and sore shoulders.
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <h3>Swedish Massage</h3>
+                    <div class="duration">60 / 90 Minutes</div>
+                    <div class="price">$110 / $140</div>
+                    <div class="description">
+                        Gentle, flowing strokes promoting relaxation and improved circulation. Perfect for stress relief and those new to massage therapy.
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <h3>Sports Massage</h3>
+                    <div class="duration">60 / 90 Minutes</div>
+                    <div class="price">$110 / $140</div>
+                    <div class="description">
+                        Specialized treatment for athletes and active individuals. Focuses on preventing injuries, improving flexibility, and reducing recovery time from intensive training.
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <h3>Prenatal Massage</h3>
+                    <div class="duration">60 / 90 Minutes</div>
+                    <div class="price">$130 / $160</div>
+                    <div class="description">
+                        Specialized massage for expectant mothers. Addresses pregnancy-related discomforts including back pain, leg cramps, and tension. Safe techniques for all trimesters.
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <h3>Foot Massage & Reflexology</h3>
+                    <div class="duration">30 / 60 Minutes</div>
+                    <div class="price">Contact for Pricing</div>
+                    <div class="description">
+                        Therapeutic foot massage and pressure point therapy. Promotes relaxation, improves circulation, and addresses whole-body wellness through reflex zones.
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <h3>Thai Massage</h3>
+                    <div class="duration">60 / 90 Minutes</div>
+                    <div class="price">Contact for Pricing</div>
+                    <div class="description">
+                        Traditional Thai massage combining acupressure, stretching, and assisted yoga postures. Improves flexibility, energy flow, and overall body alignment.
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <h3>Lymphatic Drainage Massage</h3>
+                    <div class="duration">60 / 90 Minutes</div>
+                    <div class="price">Contact for Pricing</div>
+                    <div class="description">
+                        Gentle massage technique promoting lymphatic system flow. Supports immune function, reduces swelling, and aids in detoxification.
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <h3>Cupping Therapy</h3>
+                    <div class="duration">Add-on Service</div>
+                    <div class="price">Contact for Pricing</div>
+                    <div class="description">
+                        Traditional cupping therapy can be added to any massage session. Promotes blood flow, releases muscle tension, and supports healing.
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <h3>Couples Massage</h3>
+                    <div class="duration">60 / 90 Minutes</div>
+                    <div class="price">Contact for Pricing</div>
+                    <div class="description">
+                        Share a relaxing massage experience with a partner, friend, or family member. Two therapists work simultaneously in the same room.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mt-5">
+            <div class="col-lg-8 text-center">
+                <p style="font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 300; color: #555; margin-bottom: 2rem;">
+                    <i class="fas fa-credit-card me-2" style="color: #7eb89e;"></i>
+                    We accept all major credit cards, insurance, and Flexible Spending Cards (FSA)
+                </p>
+                <a href="{{ url_for('worcester_booking') }}" class="btn btn-lg" style="background: #7eb89e; color: white; padding: 1rem 3rem; border-radius: 50px; font-family: 'Montserrat', sans-serif; letter-spacing: 2px; text-decoration: none; display: inline-block;">Book Your Appointment</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Services & Pricing - Holliston - Tough Love Massage{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="spa-hero" style="background-image: url('{{ url_for('static', filename='holliston-room.png') }}');">
+    <div class="spa-hero-content">
+        <h1>Services & Pricing</h1>
+        <div class="subtitle">Holliston Location</div>
+    </div>
+</div>
+
+<!-- Location Navigation -->
+<nav class="location-nav">
+    <div class="container">
+        <a href="{{ url_for('location_holliston') }}">Home</a>
+        <a href="{{ url_for('holliston_services') }}" class="active">Services & Pricing</a>
+        <a href="{{ url_for('holliston_booking') }}">Book Now</a>
+        <a href="{{ url_for('holliston_team') }}">Meet Our Team</a>
+        <a href="{{ url_for('holliston_info') }}">Location Info</a>
+    </div>
+</nav>
+
+<!-- New Client Special -->
+<section class="spa-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="special-card">
+                    <h3>New Client Special</h3>
+                    <div class="price">$90</div>
+                    <div class="description">
+                        First-time clients receive 60 minutes of therapeutic massage for just $90. Experience the Tough Love difference with our specialized deep tissue techniques designed to address your specific needs.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Menu -->
+<section class="spa-section alt-bg">
+    <div class="container">
+        <h2 class="spa-section-title">Our Services</h2>
+        <p class="spa-section-subtitle">Customized Therapeutic Treatments</p>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="service-card">
+                    <h3>Therapeutic Massage</h3>
+                    <div class="duration">60 Minutes</div>
+                    <div class="price">$110 - $120</div>
+                    <div class="description">
+                        Our signature therapeutic massage combines deep tissue techniques with targeted pressure to address chronic pain, muscular tension, and stress. Each session is customized to your specific needs and pain points.
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <h3>Extended Therapeutic Session</h3>
+                    <div class="duration">90 Minutes</div>
+                    <div class="price">$130 - $150</div>
+                    <div class="description">
+                        For those needing extra attention to multiple problem areas. This extended session allows for comprehensive work on larger muscle groups and multiple areas of concern with slower, more deliberate techniques.
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <h3>Deep Tissue Massage</h3>
+                    <div class="duration">60 - 90 Minutes</div>
+                    <div class="price">Contact for Pricing</div>
+                    <div class="description">
+                        Specialized slow, firm pressure targeting deep muscle layers. Ideal for chronic aches and pains, contracted areas such as stiff neck, upper back, lower back pain, leg muscle tightness, and sore shoulders.
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <h3>Sports Recovery Massage</h3>
+                    <div class="duration">60 - 90 Minutes</div>
+                    <div class="price">Contact for Pricing</div>
+                    <div class="description">
+                        Designed for athletes and active individuals. Focuses on areas of the body that are overused and stressed from repetitive and often aggressive movements. Helps prevent injuries, improve flexibility, and reduce recovery time.
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <h3>Pain Management Therapy</h3>
+                    <div class="duration">60 - 90 Minutes</div>
+                    <div class="price">Contact for Pricing</div>
+                    <div class="description">
+                        Specialized treatment for chronic pain conditions including sciatica, headaches, back and neck pain. Our therapeutic approach targets the root cause of your discomfort with evidence-based muscular therapy techniques.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mt-5">
+            <div class="col-lg-8 text-center">
+                <p style="font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 300; color: #555; margin-bottom: 2rem;">
+                    <i class="fas fa-credit-card me-2" style="color: #7eb89e;"></i>
+                    We accept all major credit cards, insurance, and Flexible Spending Cards (FSA)
+                </p>
+                <a href="{{ url_for('holliston_booking') }}" class="btn btn-lg" style="background: #7eb89e; color: white; padding: 1rem 3rem; border-radius: 50px; font-family: 'Montserrat', sans-serif; letter-spacing: 2px; text-decoration: none; display: inline-block;">Book Your Appointment</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

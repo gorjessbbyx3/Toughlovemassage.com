@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Location Info - Holliston - Tough Love Massage{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="spa-hero" style="background-image: url('{{ url_for('static', filename='holliston-storefront.png') }}'); height: 40vh; min-height: 300px;">
+    <div class="spa-hero-content">
+        <h1>Location Information</h1>
+        <div class="subtitle">Holliston Spa</div>
+    </div>
+</div>
+
+<!-- Location Navigation -->
+<nav class="location-nav">
+    <div class="container">
+        <a href="{{ url_for('location_holliston') }}">Home</a>
+        <a href="{{ url_for('holliston_services') }}">Services & Pricing</a>
+        <a href="{{ url_for('holliston_booking') }}">Book Now</a>
+        <a href="{{ url_for('holliston_team') }}">Meet Our Team</a>
+        <a href="{{ url_for('holliston_info') }}" class="active">Location Info</a>
+    </div>
+</nav>
+
+<!-- Contact & Hours Section -->
+<section class="spa-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="info-box">
+                    <h4><i class="fas fa-map-marker-alt me-2" style="color: #7eb89e;"></i>Address</h4>
+                    <p>
+                        21A Charles St<br>
+                        Holliston, MA 01746
+                    </p>
+                    <a href="https://www.google.com/maps/search/?api=1&query=21A+Charles+St+Holliston+MA+01746" target="_blank" class="btn btn-sm" style="background: #7eb89e; color: white; padding: 0.5rem 1.5rem; border-radius: 50px; font-family: 'Montserrat', sans-serif; text-decoration: none; display: inline-block;">
+                        <i class="fas fa-directions me-1"></i>Get Directions
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="info-box">
+                    <h4><i class="fas fa-clock me-2" style="color: #7eb89e;"></i>Hours of Operation</h4>
+                    <p>
+                        <strong>Monday - Friday</strong><br>
+                        8:00 AM - 8:00 PM<br><br>
+                        <strong>Saturday - Sunday</strong><br>
+                        8:00 AM - 5:00 PM<br><br>
+                        <em style="color: #888; font-size: 0.9rem;">By appointment only</em>
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="info-box">
+                    <h4><i class="fas fa-phone me-2" style="color: #7eb89e;"></i>Contact</h4>
+                    <p>
+                        <strong>Phone:</strong> <a href="tel:7742330365">(774) 233-0365</a><br>
+                        <strong>Email:</strong> <a href="mailto:info@toughlovemassage.com">info@toughlovemassage.com</a>
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="info-box">
+                    <h4><i class="fas fa-parking me-2" style="color: #7eb89e;"></i>Parking</h4>
+                    <p>
+                        Street parking and private lot available<br>
+                        Convenient access with ample parking for all guests
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="spa-section alt-bg">
+    <div class="container">
+        <h3 class="spa-section-title">Find Us</h3>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2958.6!2d-71.4244!3d42.1989!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e47f1e8d7c7c7f%3A0x1234567890abcdef!2s21A%20Charles%20St%2C%20Holliston%2C%20MA%2001746!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus" 
+                    width="100%" 
+                    height="450" 
+                    style="border:0; border-radius: 2px; box-shadow: 0 2px 15px rgba(0,0,0,0.08);" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Policies Section -->
+<section class="spa-section">
+    <div class="container">
+        <h3 class="spa-section-title">Policies</h3>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="info-box">
+                    <h4>Cancellation Policy</h4>
+                    <p>
+                        We require 24-hour notice for cancellations or rescheduling. Late cancellations or no-shows may be subject to a fee. We understand that emergencies happen - please call us as soon as possible if you need to change your appointment.
+                    </p>
+                </div>
+                
+                <div class="info-box">
+                    <h4>Payment & Insurance</h4>
+                    <p>
+                        We accept all major credit cards, cash, and checks. We also accept insurance and Flexible Spending Cards (FSA). Please bring your insurance card to your first appointment.
+                    </p>
+                </div>
+                
+                <div class="info-box">
+                    <h4>First Visit</h4>
+                    <p>
+                        Please arrive 10-15 minutes early for your first visit to complete intake forms. This allows us to better understand your health history and treatment goals. Wear comfortable clothing.
+                    </p>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('policies') }}" style="color: #7eb89e; font-family: 'Montserrat', sans-serif; text-decoration: none; font-weight: 400;">
+                        View Complete Policies <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

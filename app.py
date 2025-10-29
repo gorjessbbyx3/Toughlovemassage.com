@@ -233,11 +233,51 @@ def home():
 
 @app.route('/location-downtown')
 def location_downtown():
-    return render_template('location_downtown.html')
+    return redirect(url_for('location_worcester'))
 
 @app.route('/location-suburban')
 def location_suburban():
-    return render_template('location_suburban.html')
+    return redirect(url_for('location_holliston'))
+
+@app.route('/holliston')
+def location_holliston():
+    return render_template('locations/holliston/landing.html')
+
+@app.route('/holliston/services')
+def holliston_services():
+    return render_template('locations/holliston/services.html')
+
+@app.route('/holliston/booking')
+def holliston_booking():
+    return render_template('locations/holliston/booking.html')
+
+@app.route('/holliston/team')
+def holliston_team():
+    return render_template('locations/holliston/team.html')
+
+@app.route('/holliston/info')
+def holliston_info():
+    return render_template('locations/holliston/info.html')
+
+@app.route('/worcester')
+def location_worcester():
+    return render_template('locations/worcester/landing.html')
+
+@app.route('/worcester/services')
+def worcester_services():
+    return render_template('locations/worcester/services.html')
+
+@app.route('/worcester/booking')
+def worcester_booking():
+    return render_template('locations/worcester/booking.html')
+
+@app.route('/worcester/team')
+def worcester_team():
+    return render_template('locations/worcester/team.html')
+
+@app.route('/worcester/info')
+def worcester_info():
+    return render_template('locations/worcester/info.html')
 
 @app.route('/gift-cards', methods=['GET', 'POST'])
 def gift_cards():

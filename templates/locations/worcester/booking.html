@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Book Appointment - Worcester - Tough Love Massage{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="spa-hero" style="background-image: url('{{ url_for('static', filename='worcester-room.png') }}'); height: 40vh; min-height: 300px;">
+    <div class="spa-hero-content">
+        <h1>Book Your Appointment</h1>
+        <div class="subtitle">Worcester Location</div>
+    </div>
+</div>
+
+<!-- Location Navigation -->
+<nav class="location-nav">
+    <div class="container">
+        <a href="{{ url_for('location_worcester') }}">Home</a>
+        <a href="{{ url_for('worcester_services') }}">Services & Pricing</a>
+        <a href="{{ url_for('worcester_booking') }}" class="active">Book Now</a>
+        <a href="{{ url_for('worcester_team') }}">Meet Our Team</a>
+        <a href="{{ url_for('worcester_info') }}">Location Info</a>
+    </div>
+</nav>
+
+<!-- Booking Section -->
+<section class="spa-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <h2 class="spa-section-title">Schedule Online</h2>
+                <p class="spa-section-subtitle">24/7 Online Booking Available</p>
+                
+                <div class="mb-4 text-center">
+                    <p style="font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 300; line-height: 1.8; color: #555;">
+                        Use our convenient online scheduler below to book your appointment at our Worcester location. 
+                        Select your preferred service, therapist, and time slot. For same-day appointments, please call us at 
+                        <a href="tel:5083732830" style="color: #7eb89e; text-decoration: none; font-weight: 400;">(508) 373-2830</a>.
+                    </p>
+                </div>
+
+                <iframe 
+                    src="https://toughlovemassage22.fullslate.com/" 
+                    class="booking-frame"
+                    title="Book Appointment - Tough Love Massage Worcester">
+                </iframe>
+
+                <div class="mt-4 text-center">
+                    <p style="font-family: 'Montserrat', sans-serif; font-size: 0.9rem; font-weight: 300; color: #888;">
+                        <i class="fas fa-info-circle me-2" style="color: #7eb89e;"></i>
+                        Please arrive 10 minutes early for your first visit to complete intake forms.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Alternative -->
+<section class="spa-section alt-bg">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 2rem; margin-bottom: 1rem;">Prefer to Book by Phone?</h3>
+                <p style="font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 300; margin-bottom: 2rem;">
+                    Our friendly staff is ready to help you schedule your appointment
+                </p>
+                <a href="tel:5083732830" class="btn btn-lg" style="background: #7eb89e; color: white; padding: 1rem 3rem; border-radius: 50px; font-family: 'Montserrat', sans-serif; letter-spacing: 2px; text-decoration: none; display: inline-block;">
+                    <i class="fas fa-phone me-2"></i>Call (508) 373-2830
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

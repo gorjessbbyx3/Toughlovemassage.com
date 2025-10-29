@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Meet Our Team - Holliston - Tough Love Massage{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="spa-hero" style="background-image: url('{{ url_for('static', filename='holliston-room.png') }}'); height: 40vh; min-height: 300px;">
+    <div class="spa-hero-content">
+        <h1>Meet Our Team</h1>
+        <div class="subtitle">Holliston Location</div>
+    </div>
+</div>
+
+<!-- Location Navigation -->
+<nav class="location-nav">
+    <div class="container">
+        <a href="{{ url_for('location_holliston') }}">Home</a>
+        <a href="{{ url_for('holliston_services') }}">Services & Pricing</a>
+        <a href="{{ url_for('holliston_booking') }}">Book Now</a>
+        <a href="{{ url_for('holliston_team') }}" class="active">Meet Our Team</a>
+        <a href="{{ url_for('holliston_info') }}">Location Info</a>
+    </div>
+</nav>
+
+<!-- Team Section -->
+<section class="spa-section">
+    <div class="container">
+        <h2 class="spa-section-title">Our Skilled Therapists</h2>
+        <p class="spa-section-subtitle">Dedicated to Your Wellness</p>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="team-member">
+                            <div style="width: 200px; height: 200px; border-radius: 50%; background: linear-gradient(135deg, #7eb89e 0%, #6a9d85 100%); margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; border: 4px solid #f9f7f4; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <i class="fas fa-user" style="font-size: 5rem; color: white; opacity: 0.5;"></i>
+                            </div>
+                            <h4>Our Expert Therapists</h4>
+                            <div class="title">Licensed Massage Therapists</div>
+                            <div class="bio">
+                                Our team of licensed massage therapists brings years of experience in therapeutic and deep tissue massage. Each therapist is dedicated to understanding your unique needs and creating a personalized treatment plan to help you achieve optimal wellness.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="team-member">
+                            <div style="width: 200px; height: 200px; border-radius: 50%; background: linear-gradient(135deg, #7eb89e 0%, #6a9d85 100%); margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; border: 4px solid #f9f7f4; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <i class="fas fa-hands" style="font-size: 5rem; color: white; opacity: 0.5;"></i>
+                            </div>
+                            <h4>Specialized Training</h4>
+                            <div class="title">Deep Tissue Specialists</div>
+                            <div class="bio">
+                                Our therapists specialize in deep tissue techniques and pain management. With continuing education in sports massage, myofascial release, and trigger point therapy, they're equipped to address chronic pain, sports injuries, and muscular tension.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Join Team CTA -->
+<section class="spa-section alt-bg">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; margin-bottom: 1rem;">Join Our Team</h3>
+                <p style="font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 300; line-height: 1.8; color: #555; margin-bottom: 2rem;">
+                    Are you a skilled massage therapist looking to join a supportive, professional environment? We're always looking for talented individuals who share our passion for therapeutic wellness.
+                </p>
+                <a href="{{ url_for('join_team') }}" class="btn btn-lg" style="background: #7eb89e; color: white; padding: 1rem 3rem; border-radius: 50px; font-family: 'Montserrat', sans-serif; letter-spacing: 2px; text-decoration: none; display: inline-block;">
+                    View Career Opportunities
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
